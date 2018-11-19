@@ -5,7 +5,7 @@
     <div class='content gradeable_message'><p>{{ gradeable_message|raw }}</p></div>
 {% endif %}
 
-<div class="content">    
+<div class="content">
     <div class="upperinfo">
         <h1 class="upperinfo-left">New submission for: {{ gradeable_name }}</h1>
         {% if has_due_date %}
@@ -24,12 +24,12 @@
         <form id="submissionForm" method="post" style="text-align: center; margin: 0 auto; width: 100%; ">
             <div >
                 <input type='radio' id="radio_normal" name="submission_type" checked="true">
-                Normal Submission
+                <label for="radio_normal">Normal Submission</label>
                 <input type='radio' id="radio_student" name="submission_type">
-                Make Submission for a Student
+                <label for="radio_student">Make Submission for a Student</label>
                 {% if part_names|length == 1 and not is_vcs %}
                     <input type='radio' id="radio_bulk" name="submission_type">
-                    Bulk Upload
+                    <label for="radio_bulk">Bulk Upload</label>
                 {% endif %}
             </div>
             <div id="user_id_input" style="display: none">
@@ -38,16 +38,16 @@
                 </div>
                 <div class="sub">
                     <input type="hidden" name="csrf_token" value="{{ core.getCsrfToken() }}" />
-                    user_id: <input type="text" id= "user_id" value ="" placeholder="{{ user_id }}"/>
+                    <label for="user_id">user_id:</label> <input type="text" id= "user_id" value ="" placeholder="{{ user_id }}"/>
                 </div>
             </div>
             <div class = "sub" id="pdf_submit_button" style="display: none">
                 <div class="sub">
-                    <span id="pages_prompt"># of page(s) per PDF:</span> 
-                    <span id="prefix_prompt">QR code prefix:</span>
+                    <span id="pages_prompt"><label for="num_pages"># of page(s) per PDF:</label></span>
+                    <span id="prefix_prompt"><label for="qr_prefix">QR code prefix:</label></span>
                     <input type="number" id= "num_pages" placeholder="required"/>
                     <input type="text" id="qr_prefix" placeholder="optional" />
-                    Split by QR code? <input type="checkbox" id="use_qr">
+                    <label for="use_qr">Split by QR code?</label> <input type="checkbox" id="use_qr">
                 </div>
             </div>
         </form>
@@ -131,9 +131,9 @@
                 <div id="upload{{ loop.index }}" style="cursor: pointer; text-align: center; border: dashed 2px lightgrey; display:table-cell; height: 150px;">
                     <h3 class="label" id="label{{ loop.index }}">
                         {% if part_names|length > 1 %}
-                            Drag your {{ part }} here or click to open file browser
+                            <label for="input_file{{ loop.index }}">Drag your {{ part }} here or click to open file browser</label>
                         {% else %}
-                            Drag your file(s) here or click to open file browser
+                            <label for="input_file{{ loop.index }}">Drag your file(s) here or click to open file browser</label>
                         {% endif %}
                     </h3>
                     <input type="file" name="files" id="input_file{{ loop.index }}" style="display: none" onchange="addFilesFromInput({{ loop.index }})" multiple />
