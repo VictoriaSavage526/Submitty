@@ -16,8 +16,12 @@ if ENV.has_key?('EXTRA')
     extra_command << ENV['EXTRA']
 end
 
+# Location of Submitty's GIT repository within the VM
+SUBMITTY_GIT_PATH = "/usr/local/submitty/GIT_CHECKOUT/Submitty"
+
+# Script to bootstrap a development VM.  Required on first run.
 $script = <<SCRIPT
-GIT_PATH=/usr/local/submitty/GIT_CHECKOUT/Submitty
+GIT_PATH=#{SUBMITTY_GIT_PATH}
 DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 VERSION=$(lsb_release -sc | tr '[:upper:]' '[:lower:]')
 mkdir -p ${GIT_PATH}/.vagrant/${DISTRO}/${VERSION}/logs
@@ -72,8 +76,8 @@ Vagrant.configure(2) do |config|
     # While it will sometimes randomly work, we can just set VirtualBox to use a DNS proxy from the host,
     # which seems to be far more reliable in having the DNS work, rather than leaving it to VirtualBox.
     # See https://serverfault.com/a/453260 for more info.
-    # vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    # vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
   config.vm.provision :shell, :inline => " sudo timedatectl set-timezone America/New_York", run: "once"
@@ -95,8 +99,14 @@ Vagrant.configure(2) do |config|
     end
   }
 
+  # Run setup scripts to bootstrap development VM
   config.vm.provision 'shell', inline: $script
-  config.vm.provision 'rpi', type: 'shell', run: 'never', inline: 'bash /usr/local/submitty/GIT_CHECKOUT/Submitty/.setup/distro_setup/ubuntu/rpi.sh'
+
+  # Optional provision to install RPI course resources.
+  # "run: 'never'" means that this provision will never *automatically* run.
+  # Instead, it must be manually specified like so:
+  # vagrant up --provision-with shell,rpi
+  config.vm.provision 'rpi', type: 'shell', run: 'never', inline: "bash #{SUBMITTY_GIT_PATH}/.setup/distro_setup/ubuntu/rpi.sh"
 
   if ARGV.include?('ssh')
     config.ssh.username = 'root'
