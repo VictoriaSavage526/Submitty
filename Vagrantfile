@@ -96,6 +96,7 @@ Vagrant.configure(2) do |config|
   }
 
   config.vm.provision 'shell', inline: $script
+  config.vm.provision 'rpi', type: 'shell', run: 'never', inline: 'bash /usr/local/submitty/GIT_CHECKOUT/Submitty/.setup/distro_setup/ubuntu/rpi.sh'
 
   if ARGV.include?('ssh')
     config.ssh.username = 'root'
