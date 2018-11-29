@@ -75,7 +75,7 @@
         <h3>Invite new teammates by their user ID:</h3>
         <br />
         <form action="{{ core.buildUrl({'component': 'student', 'gradeable_id': gradeable.getId(), 'page': 'team', 'action': 'invitation'}) }}" method="post">
-            <input type="text" name="invite_id" id="invite_id" placeholder="User ID" />
+            <input type="text" name="invite_id" id="invite_id" placeholder="User ID" aria-label="User ID" />
             <input type="submit" value = "Invite" class="btn btn-primary" />
         </form>
         <br />
