@@ -53,6 +53,12 @@ class Core {
     /** @var Access $access */
     private $access = null;
 
+    /** @var MemcachedHelper */
+    private $memcached_helper = null;
+
+    /** @var ModelFactory */
+    private $model_factory = null;
+
     /**
      * Core constructor.
      *
@@ -62,6 +68,8 @@ class Core {
     public function __construct() {
         $this->output = new Output($this);
         $this->access = new Access($this);
+        $this->memcached_helper = new MemcachedHelper($this);
+        $this->model_factory = new ModelFactory($this);
 
         // initialize our alert queue if it doesn't exist
         if(!isset($_SESSION['messages'])) {
@@ -460,6 +468,20 @@ class Core {
      */
     public function getAccess() {
         return $this->access;
+    }
+
+    /**
+     * @return MemcachedHelper
+     */
+    public function getCache() {
+        return $this->memcached_helper;
+    }
+
+    /**
+     * @return ModelFactory
+     */
+    public function getModelFactory() {
+        return $this->model_factory;
     }
 
     /**

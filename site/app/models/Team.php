@@ -15,7 +15,7 @@ use app\models\gradeable\Gradeable;
  * @method User[] getInvitedUsers()
  */
 class Team extends AbstractModel {
-     
+
     /** @property @var string The id of this team of form "<unique number>_<creator user id>" */
     protected $id;
     /** @property @var integer rotating section (registration or rotating) of team creator */
@@ -55,7 +55,8 @@ class Team extends AbstractModel {
             if (array_key_exists('anon_id', $user_details)) {
                 $user = new User($core, $user_details);
             } else {
-                $user = null;
+                // If we don't have user details, get the cached ones
+                $user = $this->core->getModelFactory()->getUser($user_details['user_id']);
             }
             if ($user_details['state'] === 1) {
                 $this->member_user_ids[] = $user_details['user_id'];
@@ -71,6 +72,18 @@ class Team extends AbstractModel {
             }
         }
         $this->member_list = count($this->member_user_ids) === 0 ? "[empty team]" : implode(", ", $this->member_user_ids);
+    }
+
+    public function toArray() {
+        $details = [
+            'team_id' => $this->id,
+            'registration_section' => $this->registration_section,
+            'rotating_section' => $this->rotating_section,
+            'users' => array_map(function(string $user_id) {
+                    return ['user_id' => $user_id];
+                }, array_merge($this->getMemberUserIds(), $this->getInvitedUserIds())),
+        ];
+        return $details;
     }
 
     /**
@@ -149,7 +162,7 @@ class Team extends AbstractModel {
     public function hasMember($user_id) {
         return in_array($user_id, $this->member_user_ids);
     }
-    
+
     /**
      * Get whether or not a given user invited to the team
      * @param string $user_id

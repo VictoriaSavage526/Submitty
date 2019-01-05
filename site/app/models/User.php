@@ -19,8 +19,6 @@ use app\libraries\Core;
  * @method string getPreferredLastName()  Get the preferred last name of the loaded user
  * @method string getDisplayedLastName()  Returns the preferred last name if one exists and is not null or blank,
  *                                        otherwise return the legal last name field for the user.
- * @method void setLegalFirstName(string $name)
- * @method void setLegalLastName(string $name)
  * @method string getEmail()
  * @method void setEmail(string $email)
  * @method int getGroup()
@@ -168,6 +166,32 @@ class User extends AbstractModel {
         if (isset($details['grading_registration_sections'])) {
             $this->setGradingRegistrationSections($details['grading_registration_sections']);
         }
+    }
+
+    public function toArray() {
+        $details = [
+            'user_id' => $this->id,
+            'anon_id' => $this->anon_id,
+            'user_firstname' => $this->getLegalFirstName(),
+            'user_lastname' => $this->getLegalLastName(),
+            'user_preferred_firstname' => $this->getPreferredFirstName(),
+            'user_preferred_lastname' => $this->getPreferredLastName(),
+            'user_email' => $this->email,
+            'group' => $this->group,
+            'user_updated' => $this->user_updated,
+            'instructor_updated' => $this->instructor_updated,
+
+            'registration_section' => $this->registration_section,
+            'rotating_section' => $this->rotating_section,
+            'manual_registration' => $this->manual_registration,
+            'grading_registration_sections' => $this->grading_registration_sections,
+        ];
+
+        // Notification settings
+        foreach ($this->notification_settings as $key=>$value) {
+            $details[$key] = $value;
+        }
+        return $details;
     }
 
     /**

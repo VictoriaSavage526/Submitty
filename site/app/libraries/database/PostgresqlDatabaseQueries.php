@@ -1212,34 +1212,20 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
             }
         }
 
-        $team_data_inject = 'u.registration_section, u.rotating_section,';
+        $team_data_inject = '';
         $team_inject = '';
         if ($team) {
             $team_data_inject =
               'ldet.array_late_day_exceptions,
                ldet.array_late_day_user_ids,
+               
                /* Aggregate Team User Data */
-               team.team_id,
-               team.array_team_users,
-               team.registration_section,
-               team.rotating_section,';
+               team.team_id,';
 
             $team_inject ='
               LEFT JOIN (
-                SELECT gt.team_id,
-                  gt.registration_section,
-                  gt.rotating_section,
-                  json_agg(tu) AS array_team_users
+                SELECT gt.team_id
                 FROM gradeable_teams gt
-                  JOIN (
-                    SELECT
-                      t.team_id,
-                      t.state,
-                      tu.*
-                    FROM teams t
-                    JOIN users tu ON t.user_id = tu.user_id ORDER BY t.user_id
-                  ) AS tu ON gt.team_id = tu.team_id
-                GROUP BY gt.team_id
               ) AS team ON eg.team_assignment AND EXISTS (
                 SELECT 1 FROM gradeable_teams gt
                 WHERE gt.team_id=team.team_id AND gt.g_id=g.g_id
@@ -1298,17 +1284,6 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
 
               /* Aggregate Gradeable Component Grader Data */
               gcd.array_grader_user_id,
-              gcd.array_grader_anon_id,
-              gcd.array_grader_user_firstname,
-              gcd.array_grader_user_preferred_firstname,
-              gcd.array_grader_user_lastname,
-              gcd.array_grader_user_email,
-              gcd.array_grader_user_group,
-              gcd.array_grader_manual_registration,
-              gcd.array_grader_last_updated,
-              gcd.array_grader_registration_section,
-              gcd.array_grader_rotating_section,
-              gcd.array_grader_grading_registration_sections,
 
               /* Aggregate Gradeable Component Data (versions) */
               egd.array_version,
@@ -1333,17 +1308,7 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
               {$team_data_inject}
 
               /* User Submitter Data */
-              u.user_id,
-              u.anon_id,
-              u.user_firstname,
-              u.user_preferred_firstname,
-              u.user_lastname,
-              u.user_preferred_lastname,
-              u.user_email,
-              u.user_group,
-              u.manual_registration,
-              u.last_updated,
-              u.grading_registration_sections
+              u.user_id
 
             FROM gradeable g
 
@@ -1356,17 +1321,7 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
               ) AS eg ON eg.g_id=g.g_id
 
               /* Join user data */
-              LEFT JOIN (
-                SELECT u.*, sr.grading_registration_sections
-                FROM users u
-                LEFT JOIN (
-                  SELECT
-                    json_agg(sections_registration_id) AS grading_registration_sections,
-                    user_id
-                  FROM grading_registration
-                  GROUP BY user_id
-                ) AS sr ON u.user_id=sr.user_id
-              ) AS u ON eg IS NULL OR NOT eg.team_assignment
+              LEFT JOIN users AS u ON eg IS NULL OR NOT eg.team_assignment
 
               {$team_inject}
 
@@ -1386,19 +1341,8 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                   json_agg(gcd_graded_version) AS array_graded_version,
                   json_agg(gcd_grade_time) AS array_grade_time,
                   json_agg(string_mark_id) AS array_mark_id,
-
+                  
                   json_agg(ug.user_id) AS array_grader_user_id,
-                  json_agg(ug.anon_id) AS array_grader_anon_id,
-                  json_agg(ug.user_firstname) AS array_grader_user_firstname,
-                  json_agg(ug.user_preferred_firstname) AS array_grader_user_preferred_firstname,
-                  json_agg(ug.user_lastname) AS array_grader_user_lastname,
-                  json_agg(ug.user_email) AS array_grader_user_email,
-                  json_agg(ug.user_group) AS array_grader_user_group,
-                  json_agg(ug.manual_registration) AS array_grader_manual_registration,
-                  json_agg(ug.last_updated) AS array_grader_last_updated,
-                  json_agg(ug.registration_section) AS array_grader_registration_section,
-                  json_agg(ug.rotating_section) AS array_grader_rotating_section,
-                  json_agg(ug.grading_registration_sections) AS array_grader_grading_registration_sections,
                   in_gcd.gd_id
                 FROM gradeable_component_data in_gcd
                   LEFT JOIN (
@@ -1411,17 +1355,7 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                   ) AS gcmd ON gcmd.gc_id=in_gcd.gc_id AND gcmd.gd_id=in_gcd.gd_id
 
                   /* Join grader data; TODO: do we want/need 'sr' information? */
-                  LEFT JOIN (
-                    SELECT u.*, grading_registration_sections
-                    FROM users u
-                    LEFT JOIN (
-                      SELECT
-                        json_agg(sections_registration_id) AS grading_registration_sections,
-                        user_id
-                      FROM grading_registration
-                      GROUP BY user_id
-                    ) AS sr ON u.user_id=sr.user_id
-                  ) AS ug ON ug.user_id=in_gcd.gcd_grader_id
+                  LEFT JOIN users AS ug ON ug.user_id=in_gcd.gcd_grader_id
                 GROUP BY in_gcd.gd_id
               ) AS gcd ON gcd.gd_id=gd.gd_id
 
@@ -1461,12 +1395,8 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
 
             // Get the submitter
             $submitter = null;
-            if (isset($row['team_id'])) {
-                // Get the user data for the team
-                $team_users = json_decode($row["array_team_users"], true);
-
-                // Create the team with the query results and users array
-                $submitter = new Team($this->core, array_merge($row, ['users' => $team_users]));
+            if ($gradeable->isTeamAssignment()) {
+                $submitter = $this->core->getModelFactory()->getTeam($row['team_id']);
 
                 // Get the late day exceptions for each user
                 $late_day_exceptions = [];
@@ -1482,10 +1412,7 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                     }
                 }
             } else {
-                if (isset($row['grading_registration_sections'])) {
-                    $row['grading_registration_sections'] = json_decode($row['grading_registration_sections']);
-                }
-                $submitter = new User($this->core, $row);
+                $submitter = $this->core->getModelFactory()->getUser($row['user_id']);
 
                 // Get the late day exception for the user
                 $late_day_exceptions = [
@@ -1530,18 +1457,7 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
             // Break down the graded component / version / grader data into an array of arrays
             //  instead of arrays of sql array-strings
             $user_properties = [
-                'user_id',
-                'anon_id',
-                'user_firstname',
-                'user_preferred_firstname',
-                'user_lastname',
-                'user_email',
-                'user_group',
-                'manual_registration',
-                'last_updated',
-                'registration_section',
-                'rotating_section',
-                'grading_registration_sections'
+                'user_id', // only the id since we are using caching for loading users
             ];
             $comp_array_properties = [
                 'comp_id',
@@ -1580,14 +1496,11 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                             $comp_array[$property] = $db_row_split[$property][$i];
                         }
 
-                        //  Similarly, transpose just this grader
-                        $user_array = [];
-                        foreach ($user_properties as $property) {
-                            $user_array[$property] = $db_row_split['grader_' . $property][$i];
-                        }
+                        // Get the grader is
+                        $grader_id = $db_row_split['grader_user_id'][$i];
 
                         // Create the grader user
-                        $grader = new User($this->core, $user_array);
+                        $grader = $this->core->getModelFactory()->getUser($grader_id);
 
                         // Create the component
                         $graded_component = new GradedComponent($this->core,
