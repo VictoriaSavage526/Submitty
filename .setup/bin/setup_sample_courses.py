@@ -962,9 +962,9 @@ class Course(object):
                             self.conn.execute(gradeable_component_data.insert(), gc_id=component.key, gd_id=gd_id,
                                          gcd_score=score, gcd_component_comment="", gcd_grader_id=self.instructor.id, gcd_grade_time=grade_time, gcd_graded_version=-1)
         #This segment adds the sample forum posts for the sample course only
-        if self.code == "sample":
-            self.add_sample_forum_data()
-            print('Added forum data to sample course.')
+            #if self.code == "sample":
+        #    self.add_sample_forum_data()
+        #    print('Added forum data to sample course.')
 
         self.conn.close()
         submitty_conn.close()

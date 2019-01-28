@@ -1,0 +1,8 @@
+CACHING: Have one entry in the cache be 'all gradeable ids', 'all user ids', etc. so we don't have to hit the database often.  These indexes will be updated whenever gradeables / users are added / deleted (TODO: how is this done for users)
+
+We need to see if joining all user and team data (via caching) actually reduces overall runtime
+
+We can cache the graders (user type < 4) in the ModelFactory.  We could probably use interning for
+    all users and use reference counting to remove those with no references.
+
+LRU caching could be implemented with a 'frame history' entry in the memcached server
