@@ -27,6 +27,7 @@ class ElectronicGraderView extends AbstractView {
      * @param string $section_type
      * @param int $regrade_requests
      * @param bool $show_warnings
+     * @param string $next_to_grade
      * @return string
      */
     public function statusPage(
@@ -41,7 +42,8 @@ class ElectronicGraderView extends AbstractView {
         int $viewed_grade,
         string $section_type,
         int $regrade_requests,
-        bool $show_warnings) {
+        bool $show_warnings,
+        string $next_to_grade) {
 
         $peer = false;
         if($gradeable->isPeerGrading() && $this->core->getUser()->getGroup() == User::GROUP_STUDENT) {
@@ -174,12 +176,21 @@ class ElectronicGraderView extends AbstractView {
             }
         }
 
+        $grade_next_url = $this->core->buildUrl([
+            'component' => 'grading',
+            'page' => 'electronic',
+            'action' => 'grade',
+            'gradeable_id' => $gradeable->getId(),
+            'who_id' => $next_to_grade
+        ]);
+
         return $this->core->getOutput()->renderTwigTemplate("grading/electronic/Status.twig", [
             "gradeable_id" => $gradeable->getId(),
             "gradeable_title" => $gradeable->getTitle(),
             "team_assignment" => $gradeable->isTeamAssignment(),
             "ta_grades_released" => $gradeable->isTaGradeReleased(),
             "autograding_non_extra_credit" => $gradeable->getAutogradingConfig()->getTotalNonExtraCredit(),
+            "grade_next_url" => $grade_next_url,
             "peer" => $peer,
             "team_total" => $team_total,
             "team_percentage" => $team_percentage,

@@ -465,9 +465,22 @@ class ElectronicGraderController extends GradingController {
         $registered_but_not_rotating = count($this->core->getQueries()->getRegisteredUsersWithNoRotatingSection());
         $rotating_but_not_registered = count($this->core->getQueries()->getUnregisteredStudentsWithRotatingSection());
 
+        $order = new GradingOrder($this->core, $gradeable, $this->core->getUser());
+
+        $next = $order->getFirstSubmitterMatching(function(Submitter $submitter) use ($gradeable) {
+            //If we're close to finished, then this does a lot of queries... Not sure there is any way to speed it up
+            $gg = $this->core->getQueries()->getGradedGradeableForSubmitter($gradeable, $submitter);
+            return $gg->getTaGradedGradeable() === null || !$gg->getTaGradedGradeable()->isComplete();
+        });
+        if ($next === null) {
+            $next_id = "";
+        } else {
+            $next_id = $next->getId();
+        }
+
         $show_warnings = $this->core->getAccess()->canI("grading.electronic.status.warnings");
 
-        $this->core->getOutput()->renderOutput(array('grading', 'ElectronicGrader'), 'statusPage', $gradeable, $sections, $component_averages, $autograded_average, $overall_average, $total_submissions, $registered_but_not_rotating, $rotating_but_not_registered, $viewed_grade, $section_key, $regrade_requests, $show_warnings);
+        $this->core->getOutput()->renderOutput(array('grading', 'ElectronicGrader'), 'statusPage', $gradeable, $sections, $component_averages, $autograded_average, $overall_average, $total_submissions, $registered_but_not_rotating, $rotating_but_not_registered, $viewed_grade, $section_key, $regrade_requests, $show_warnings, $next_id);
     }
 
     /**

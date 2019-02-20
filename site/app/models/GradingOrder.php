@@ -145,7 +145,7 @@ class GradingOrder extends AbstractModel {
      * Will only include students that cause $fn to return true
      * @param Submitter $submitter Current grading submitter
      * @param callable $fn Args: (Submitter) Returns: bool, true if the submitter should be included
-     * @return Submitter Previous submitter to grade
+     * @return Submitter|null Previous submitter to grade
      */
     public function getPrevSubmitterMatching(Submitter $submitter, callable $fn) {
         $index = $this->getSubmitterIndex($submitter);
@@ -170,7 +170,7 @@ class GradingOrder extends AbstractModel {
      * Will only include students that cause $fn to return true
      * @param Submitter $submitter Current grading submitter
      * @param callable $fn Args: (Submitter) Returns: bool, true if the submitter should be included
-     * @return Submitter Next submitter to grade
+     * @return Submitter|null Next submitter to grade
      */
     public function getNextSubmitterMatching(Submitter $submitter, callable $fn) {
         $index = $this->getSubmitterIndex($submitter);
@@ -185,6 +185,27 @@ class GradingOrder extends AbstractModel {
                 return null;
             }
             //Repeat until we find one that works
+        } while (!$fn($sub));
+
+        return $sub;
+    }
+
+    /**
+     * Get the first submitter to grade.
+     * Will only include students that cause $fn to return true
+     * @param Submitter $submitter Current grading submitter
+     * @param callable $fn Args: (Submitter) Returns: bool, true if the submitter should be included
+     * @return Submitter|null First submitter to grade
+     */
+    public function getFirstSubmitterMatching(callable $fn) {
+        $index = 0;
+        do {
+            $sub = $this->getSubmitterByIndex($index);
+            if ($sub === false) {
+                return null;
+            }
+            //Repeat until we find one that works
+            $index++;
         } while (!$fn($sub));
 
         return $sub;

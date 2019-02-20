@@ -150,7 +150,7 @@
             </a>
             {% if core.getUser().getGradingRegistrationSections()|length != 0 %}
                 <a class="btn btn-primary"
-                   href="{{ core.buildUrl({'component': 'grading', 'page': 'electronic', 'action': 'grade', 'gradeable_id': gradeable_id}) }}">
+                   href="{{ grade_next_url }}">
                     Grade Next Student
                 </a>
                 <a class="btn btn-primary"
