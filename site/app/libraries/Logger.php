@@ -2,6 +2,8 @@
 
 namespace app\libraries;
 
+use Psr\Log\{AbstractLogger, LogLevel};
+
 /**
  * Class Logger
  *
@@ -12,18 +14,10 @@ namespace app\libraries;
  *
  * @package app\libraries
  */
-class Logger {
+class Logger extends AbstractLogger {
 
-    /**
-     * Log levels for the logger
-     */
-    const DEBUG = 0;
-    const INFO = 1;
-    const WARN = 2;
-    const ERROR = 3;
-    const FATAL = 4;
-
-    private static $log_path = null;
+    private $log_path = null;
+    private static $instance = null;
 
     /**
      * Don't allow usage of this class outside a static context
@@ -31,60 +25,21 @@ class Logger {
     private function __construct() { }
     private function __clone() { }
 
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Logger();
+        }
+        return self::$instance;
+    }
 
     /**
      * Set the log path to be used by the logger, but only if the path is a valid one (otherwise ignore)
      * @param string $path
      */
-    public static function setLogPath($path) {
+    public function setLogPath($path) {
         if (is_dir($path)) {
-            static::$log_path = $path;
+            $this->log_path = $path;
         }
-    }
-
-    /**
-     * Log a debug message to the logger
-     *
-     * @param string $message
-     */
-    public static function debug($message="") {
-        Logger::logError(Logger::DEBUG, $message);
-    }
-
-    /**
-     * Log an info message to the logger
-     *
-     * @param string $message
-     */
-    public static function info($message="") {
-        Logger::logError(Logger::INFO, $message);
-    }
-
-    /**
-     * Log a warning message to the logger
-     *
-     * @param string $message
-     */
-    public static function warn($message="") {
-        Logger::logError(Logger::WARN, $message);
-    }
-
-    /**
-     * Log an error message to the logger
-     *
-     * @param string $message
-     */
-    public static function error($message="") {
-        Logger::logError(Logger::ERROR, $message);
-    }
-
-    /**
-     * Log a fatal error message to the logger
-     *
-     * @param string $message
-     */
-    public static function fatal($message="") {
-        Logger::logError(Logger::FATAL, $message);
     }
 
     /**
@@ -93,8 +48,8 @@ class Logger {
      *
      * @return string
      */
-    public static function getLogPath() {
-        return self::$log_path;
+    public function getLogPath() {
+        return $this->log_path;
     }
 
     /**
@@ -103,41 +58,21 @@ class Logger {
      * We log a message as well as the calling URI if available. It's saved to $log_path/yyyymmdd.txt
      * (yyyy is year, mm is month dd is day) with each log entry seperated by bunch of "=-".
      *
-     * @param int $level: message level
-     *     0. Debug
-     *     1. Info
-     *     2. Warn
-     *     3. Error
-     *     4. Fatal Error
-     * @param $message: message to log to the file
+     * @param string        $level
+     * @param string|object $message: message to log to the file
+     * @param array         $context
      */
-    private static function logError($level=0, $message="") {
-        if (static::$log_path === null) {
+    public function log($level, $message="", array $context=[]) {
+        if ($this->log_path === null) {
             return;
         }
 
-        $filename = static::getFilename();
-        $log_message = static::getTimestamp();
+        $filename = $this->getFilename();
+        $log_message = $this->getTimestamp();
         $log_message .= " - ";
-        switch($level) {
-            case 0:
-                $log_message .= "DEBUG";
-                break;
-            case 1:
-                $log_message .= "INFO";
-                break;
-            case 2:
-                $log_message .= "WARN";
-                break;
-            case 3:
-                $log_message .= "ERROR";
-                break;
-            case 4:
-                $log_message .= "FATAL ERROR";
-                break;
-        }
+        $log_message .= strtoupper((string) $level);
 
-        $log_message .= "\n".$message."\n";
+        $log_message .= "\n".(string) $message."\n";
         if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) {
             $log_message .= 'URL: http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://';
             $log_message .= "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}\n";
@@ -145,7 +80,7 @@ class Logger {
         $log_message .= str_repeat("=-", 30)."="."\n";
 
         // Appends to the file using a locking mechanism, and supressing any potential error from this
-        @file_put_contents(FileUtils::joinPaths(static::$log_path, 'site_errors', "{$filename}.log"), $log_message, FILE_APPEND | LOCK_EX);
+        @file_put_contents(FileUtils::joinPaths($this->log_path, 'site_errors', "{$filename}.log"), $log_message, FILE_APPEND | LOCK_EX);
     }
 
     /**
@@ -154,8 +89,8 @@ class Logger {
      *
      * @return string
      */
-    private static function getFilename() {
-        FileUtils::createDir(static::$log_path);
+    private function getFilename() {
+        FileUtils::createDir($this->log_path);
         $date = getdate(time());
         return $date['year']. Utils::pad($date['mon']) . Utils::pad($date['mday']);
     }
@@ -165,7 +100,7 @@ class Logger {
      * timestamp is in the form of HH:mm:SS DD/MM/YYYY.
      * @return string
      */
-    private static function getTimestamp() {
+    private function getTimestamp() {
         $date = getdate(time());
         $log_message = Utils::pad($date['hours']).":".Utils::pad($date['minutes']).":".Utils::pad($date['seconds']);
         $log_message .= " ";
@@ -182,19 +117,18 @@ class Logger {
      * where action is defined broadly as the page they're accessing and any other relevant information
      * (so gradeable id for when they're submitting).
      *
-     * @param $user_id
-     * @param $token
-     * @param $action
+     * @param string $user_id
+     * @param string $token
+     * @param string $action
      */
-    public static function logAccess($user_id, $token, $action) {
+    public function logAccess(string $user_id, string $token, string $action) {
         $log_message[] = $user_id;
         $log_message[] = $token;
         $log_message[] = $_SERVER['REMOTE_ADDR'];
         $log_message[] = $action;
         //$log_message[] = $_SERVER['REQUEST_URI'];
-        static::logMessage('access', $log_message);
+        $this->logAccessMessage('access', $log_message);
     }
-
 
     /**
      * This logs the grading activity of any graders when they
@@ -207,9 +141,9 @@ class Logger {
      * where action is defined broadly as the page they're accessing and any other relevant information
      * (so gradeable id for when they're submitting).
      *
-     * @param $params All the params in a key-value array
+     * @param array $params All the params in a key-value array
      */
-    public static function logTAGrading($params){
+    public function logTAGrading(array $params){
         $log_message[] = $params['course_semester'];
         $log_message[] = $params['course_name'];
         $log_message[] = $params['gradeable_id'];
@@ -217,14 +151,14 @@ class Logger {
         $log_message[] = $params['submitter_id'];
         $log_message[] = array_key_exists('component_id', $params) ? $params['component_id'] : "-1";
         $log_message[] = $params['action'];
-        static::logMessage('ta_grading', $log_message);
+        $this->logAccessMessage('ta_grading', $log_message);
     }
 
-    private static function logMessage($folder, $log_message) {
-        $filename = static::getFilename();
-        array_unshift($log_message, static::getTimestamp());
+    private function logAccessMessage(string $folder, array $log_message) {
+        $filename = $this->getFilename();
+        array_unshift($log_message, $this->getTimestamp());
         $log_message[] = $_SERVER['HTTP_USER_AGENT'];
         $log_message = implode(" | ", $log_message)."\n";
-        @file_put_contents(FileUtils::joinPaths(static::$log_path, $folder, "{$filename}.log"), $log_message, FILE_APPEND | LOCK_EX);
+        @file_put_contents(FileUtils::joinPaths($this->log_path, $folder, "{$filename}.log"), $log_message, FILE_APPEND | LOCK_EX);
     }
 }

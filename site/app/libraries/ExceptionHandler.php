@@ -28,6 +28,9 @@ class ExceptionHandler {
      */
     private static $display_exceptions = false;
 
+    /** @var Logger Instantiated logger to write to if $log_exceptions is true */
+    private static $logger;
+
     /**
      * This is a static class so it should never be instaniated or copied anywhere
      */
@@ -46,6 +49,10 @@ class ExceptionHandler {
      */
     public static function setDisplayExceptions($boolean) {
         static::$display_exceptions = $boolean;
+    }
+
+    public static function setLogger(Logger $logger) {
+        static::$logger = $logger;
     }
 
     /**
@@ -119,7 +126,7 @@ class ExceptionHandler {
         }
 
        if ($log_exception) {
-            Logger::fatal($message);
+            static::$logger->critical($message);
         }
 
         if (static::$display_exceptions) {

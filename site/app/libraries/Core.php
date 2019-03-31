@@ -8,6 +8,7 @@ use app\exceptions\CurlException;
 use app\libraries\database\DatabaseFactory;
 use app\libraries\database\AbstractDatabase;
 use app\libraries\database\DatabaseQueries;
+use app\libraries\Logger;
 use app\models\Config;
 use app\models\User;
 
@@ -28,6 +29,9 @@ class Core {
 
     /** @var AbstractDatabase */
     private $course_db = null;
+
+    /** @var Logger */
+    private $logger = null;
 
     /** @var AbstractAuthentication */
     private $authentication;
@@ -203,6 +207,15 @@ class Core {
      */
     public function getConfig() {
         return $this->config;
+    }
+
+
+    public function setLogger(Logger $logger) {
+        $this->logger = $logger;
+    }
+
+    public function getLogger() {
+        return $this->logger;
     }
 
     /**

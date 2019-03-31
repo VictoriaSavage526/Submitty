@@ -11,6 +11,7 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
     private $access;
     private $ta_grading;
     private $directory;
+    private $logger;
 
     public static function setUpBeforeClass() {
         $_SERVER['HTTP_HOST'] = "localhost";
@@ -31,7 +32,7 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
         FileUtils::createDir(FileUtils::joinPaths($this->directory, 'site_errors'));
         FileUtils::createDir(FileUtils::joinPaths($this->directory, 'ta_grading'));
         $this->assertDirectoryExists($this->directory);
-        Logger::setLogPath($this->directory);
+        
         $date = getdate(time());
         $filename = $date['year'].Utils::pad($date['mon']).Utils::pad($date['mday']);
         $this->access = FileUtils::joinPaths($this->directory, 'access', $filename.".log");
@@ -40,38 +41,54 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
     }
 
     public function tearDown() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath(null);
         FileUtils::recursiveRmdir($this->directory);
     }
 
+    public function testLoggerSingleton() {
+        $this->assertEquals(Logger::getInstance(), Logger::getInstance());
+    }
+
     public function testLoggerDebug() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
         $this->assertFileNotExists($this->error);
-        Logger::debug("Debug Message");
+        $logger->debug("Debug Message");
         $this->assertFileExists($this->error);
         $this->assertMessage("DEBUG", "Debug Message");
     }
 
     public function testLoggerInfo() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
         $this->assertFileNotExists($this->error);
-        Logger::info("Info Message");
+        $logger->info("Info Message");
         $this->assertMessage("INFO", "Info Message");
     }
 
-    public function testLoggerWarn() {
+    public function testLoggerWarning() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
         $this->assertFileNotExists($this->error);
-        Logger::warn("Warn Message");
-        $this->assertMessage("WARN", "Warn Message");
+        $logger->warning("Warn Message");
+        $this->assertMessage("WARNING", "Warn Message");
     }
 
     public function testLoggerError() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
         $this->assertFileNotExists($this->error);
-        Logger::error("Error Message");
+        $logger->error("Error Message");
         $this->assertMessage("ERROR", "Error Message");
     }
 
-    public function testLoggerFatalError() {
+    public function testLoggerCriticalError() {
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
         $this->assertFileNotExists($this->error);
-        Logger::fatal("Fatal Message");
-        $this->assertMessage("FATAL ERROR", "Fatal Message");
+        $logger->critical("Fatal Message");
+        $this->assertMessage("CRITICAL", "Fatal Message");
     }
 
     public function assertMessage($level, $message) {
@@ -98,9 +115,11 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
     }
 
     public function testInvalidDirectory() {
-        $log_path = Logger::getLogPath();
-        Logger::setLogPath("/invalid");
-        $this->assertEquals($log_path, Logger::getLogPath());
+        $logger = Logger::getInstance();
+        $log_path = $logger->getLogPath();
+        $logger->setLogPath("/invalid");
+        $this->assertEquals($log_path, $logger->getLogPath());
+        $this->assertNotEquals("/invalid", $logger->getLogPath());
     }
 
     public function testTALog(){
@@ -113,7 +132,9 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
                                 "submitter_id" => "test_submitter",
                                 "action" => "test_action",
                                 "component_id" => "1");
-        Logger::logTAGrading($logging_params);
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
+        $logger->logTAGrading($logging_params);
         $file = file_get_contents($this->ta_grading);
         $lines = explode("\n", $file);
         $this->assertCount(2, $lines);
@@ -137,7 +158,9 @@ class LoggerTester extends \PHPUnit\Framework\TestCase {
     public function testAccessLog() {
         $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
         $_SERVER['HTTP_USER_AGENT'] = "PHPUnit";
-        Logger::logAccess("test", "token", "action");
+        $logger = Logger::getInstance();
+        $logger->setLogPath($this->directory);
+        $logger->logAccess("test", "token", "action");
         $file = file_get_contents($this->access);
         $lines = explode("\n", $file);
         $this->assertCount(2, $lines);

@@ -12,7 +12,8 @@
   },
   "require": {
     "twig/twig": "^2.0",
-    "ramsey/uuid": "^3.8"
+    "ramsey/uuid": "^3.8",
+    "psr/log": "^1.1"
   },
   "autoload-dev": {
     "psr-4": {

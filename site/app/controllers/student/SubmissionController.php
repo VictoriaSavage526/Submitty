@@ -1401,7 +1401,7 @@ class SubmissionController extends AbstractController {
                 && !FileUtils::recursiveRmdir($this->upload_details['version_path'])) {
                 // @codeCoverageIgnoreStart
                 // Without the filesystem messing up here, we should not be able to hit this error
-                Logger::error("Could not clean up folder {$this->upload_details['version_path']}");
+                $this->core->getLogger()->error("Could not clean up folder {$this->upload_details['version_path']}");
 
             }
             // @codeCoverageIgnoreEnd

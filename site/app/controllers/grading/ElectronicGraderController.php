@@ -995,7 +995,7 @@ class ElectronicGraderController extends GradingController {
             "submitter_id" => $submitter_id,
             "action" => "VIEW_PAGE",
         );
-        Logger::logTAGrading($logger_params);
+        $this->core->getLogger()->logTAGrading($logger_params);
 
         $this->core->getOutput()->addInternalCss('ta-grading.css');
         $show_hidden = $this->core->getAccess()->canI("autograding.show_hidden_cases", ["gradeable" => $gradeable]);
@@ -1264,7 +1264,7 @@ class ElectronicGraderController extends GradingController {
             "action" => "SAVE_COMPONENT",
             "submitter_id" => $submitter_id
         );
-        Logger::logTAGrading($logger_params);
+        $this->core->getLogger()->logTAGrading($logger_params);
 
         // Get / create the TA grade
         $ta_graded_gradeable = $graded_gradeable->getOrCreateTaGradedGradeable();
@@ -2017,7 +2017,7 @@ class ElectronicGraderController extends GradingController {
             "action" => "OPEN_COMPONENT",
             "submitter_id" => $submitter_id
         );
-        Logger::logTAGrading($logger_params);
+        $this->core->getLogger()->logTAGrading($logger_params);
 
 
         try {

@@ -105,7 +105,10 @@ if($core->getConfig()->isCourseLoaded()){
 
 date_default_timezone_set($core->getConfig()->getTimezone()->getName());
 
-Logger::setLogPath($core->getConfig()->getLogPath());
+$logger = new Logger();
+$logger->setLogPath($core->getConfig()->getLogPath());
+$core->setLogger($logger);
+ExceptionHandler::setLogger($logger);
 ExceptionHandler::setLogExceptions($core->getConfig()->shouldLogExceptions());
 ExceptionHandler::setDisplayExceptions($core->getConfig()->isDebug());
 
@@ -202,7 +205,7 @@ if ($core->getUser() !== null) {
         if ($core->getConfig()->isCourseLoaded()) {
             $action = $core->getConfig()->getSemester().':'.$core->getConfig()->getCourse().':'.$action;
         }
-        Logger::logAccess($core->getUser()->getId(), $_COOKIE['submitty_token'], $action);
+        $logger->logAccess($core->getUser()->getId(), $_COOKIE['submitty_token'], $action);
     }
 }
 

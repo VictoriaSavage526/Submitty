@@ -3,10 +3,10 @@
 namespace tests\app\libraries;
 
 use app\exceptions\AuthenticationException;
-use \app\exceptions\BaseException;
-use \app\libraries\ExceptionHandler;
-use \app\libraries\FileUtils;
-use \app\libraries\Logger;
+use app\exceptions\BaseException;
+use app\libraries\ExceptionHandler;
+use app\libraries\FileUtils;
+use app\libraries\Logger;
 use app\libraries\Utils;
 
 class ExceptionHandlerTester extends \PHPUnit\Framework\TestCase {
@@ -20,6 +20,8 @@ class ExceptionHandlerTester extends \PHPUnit\Framework\TestCase {
         $this->assertFalse($properties[0]->getValue());
         $this->assertEquals("display_exceptions", $properties[1]->getName());
         $this->assertFalse($properties[1]->getValue());
+        $this->assertEquals("logger", $properties[2]->getName());
+        $this->assertNull($properties[2]->getValue());
     }
 
     public function testThrowServerException() {
@@ -38,7 +40,9 @@ class ExceptionHandlerTester extends \PHPUnit\Framework\TestCase {
         $tmp_dir = FileUtils::joinPaths(sys_get_temp_dir(), Utils::generateRandomString());
         $this->assertTrue(FileUtils::createDir($tmp_dir));
         $this->assertTrue(FileUtils::createDir(FileUtils::joinPaths($tmp_dir, 'site_errors')));
-        Logger::setLogPath($tmp_dir);
+        $logger = Logger::getInstance();
+        $logger->setLogPath($tmp_dir);
+        ExceptionHandler::setLogger($logger);
 
         $date = getdate(time());
         $filename = $date['year'].Utils::pad($date['mon']).Utils::pad($date['mday']).'.log';
@@ -48,7 +52,7 @@ class ExceptionHandlerTester extends \PHPUnit\Framework\TestCase {
         $file = FileUtils::joinPaths($tmp_dir, 'site_errors', $filename);
         $this->assertFileExists($file);
         $actual = file_get_contents($file);
-        $this->assertRegExp('/[0-9]{2}\:[0-9]{2}\:[0-9]{2}\ [0-9]{2}\/[0-9]{2}\/[0-9]{4} \- FATAL ERROR\napp.+/', $actual);
+        $this->assertRegExp('/[0-9]{2}\:[0-9]{2}\:[0-9]{2}\ [0-9]{2}\/[0-9]{2}\/[0-9]{4} \- CRITICAL\napp.+/', $actual);
         $this->assertRegExp('/Extra Details:\n\ttest: b\n\ttest2:\n\t\ta\n\t\tc/', $actual);
         ExceptionHandler::setLogExceptions(false);
         $this->assertTrue(FileUtils::recursiveRmdir($tmp_dir));
