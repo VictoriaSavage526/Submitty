@@ -1295,6 +1295,31 @@ function openFileForum(directory, file, path ){
     window.open(url,"_blank","toolbar=no,scrollbars=yes,resizable=yes, width=700, height=600");
 }
 
+function loadInlineImages(data) {
+    //console.log(data);
+    try {
+        var json = JSON.parse(data);
+        var length = json.length-1;
+        var element = document.getElementById('button_'+json[length]);
+        if($('#'+json[length]).is(':visible')) {
+            $('#'+json[length]).hide();
+            element.classList.remove('active');
+        } else {
+            $('#'+json[length]).show();
+            element.classList.add('active');
+        }
+        for(var i = 0; i < length; i++) {
+            openFrame(json[i][0], json[i][1], json[i][2]);
+        }
+        return false;
+    } catch (err){
+        console.log(err);
+        var message ='<div class="inner-message alert alert-error" style="position: fixed;top: 40px;left: 50%;width: 40%;margin-left: -20%;" id="theid"><a class="fas fa-times message-close" onClick="removeMessagePopup(\'theid\');"></a><i class="fas fa-times-circle"></i>Could not load image attachments. Please try again.</div>';
+        $('#messages').append(message);
+        return;
+    }
+}
+
 function openFrame(url, id, filename) {
     var iframe = $('#file_viewer_' + id);
     if (!iframe.hasClass('open')) {

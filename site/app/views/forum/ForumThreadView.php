@@ -911,17 +911,41 @@ HTML;
 		if($post["has_attachment"]){
 			$post_dir = FileUtils::joinPaths($thread_dir, $post["id"]);
 			$files = FileUtils::getAllFiles($post_dir);
+			$num_files = count($files);
+			$id = "attachments_{$post['author_user_id']}_{$post['id']}";
+			$button_id = "button_attachments_{$post['author_user_id']}_{$post['id']}";
+			$file_count = 0;
+			$file_data = array();
+			$viewers = '';
 			foreach($files as $file){
 				$path = rawurlencode($file['path']);
 				$name = rawurlencode($file['name']);
 				$name_display = htmlentities(rawurldecode($file['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-				$return .= <<<HTML
-					<a href="#" style="text-decoration:none;display:inline-block;white-space: nowrap;" class="btn-default btn-sm" onclick="openFileForum('forum_attachments', '{$name}', '{$path}')" > {$name_display} </a>
+				$url = $this->core->buildUrl(array('component' => 'misc', 'page' => 'display_file', 'dir' => 'forum_attachments', 'file' => $name, 'path' => $path));
+				$file_data[] = array($url, $post["id"] . '_' . $file_count, $name);
+				//openFrame(url, '{$post["id"]}_{$file_count}', '{$name}');
+				$viewers .= <<<HTML
+					<div id="file_viewer_{$post['id']}_{$file_count}">
+
+					</div>
 HTML;
-			}					
+				$file_count++;
+			}	
+			$file_data[] = $id;
+			$encoded_data = htmlentities(json_encode($file_data), ENT_QUOTES | ENT_HTML5);
+			$return .= <<<HTML
+ 				<a href="#" id="{$button_id}" style="text-decoration:none;display:inline-block;white-space: nowrap;" onclick="loadInlineImages('{$encoded_data}');" class="btn btn-default btn-sm" type="button">
+   					Attachments <span style="float:right;margin-right:0px;min-width: 5px;" class="badge">{$num_files}</span>
+ 				</a>
+				<div style="display:none;margin-top:10px;" id="{$id}" class="well well-lg">	
+ 					{$viewers}					
+ 				</div>
+HTML;
+				
 		}
 			$offset = $offset + 30;
 						$return .= <<<HTML
+						
 </div>
 
 					<form class="reply-box post_reply_from" id="$post_id-reply" onsubmit="post.disabled=true; post.value='Submitting post...'; return true;" style="margin-left:{$offset}px" method="POST" action="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'publish_post'))}" enctype="multipart/form-data">
