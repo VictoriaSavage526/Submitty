@@ -115,6 +115,18 @@ $(document).ready(function () {
             if (val.type === 'radio' && !$(val).is(':checked')) {
                 return;
             }
+            if ($(val).hasClass('date_picker')){
+                console.log(Object.keys(val));
+                val.flatpickr({
+            allowInput: true,
+            enableTime: true,
+            enableSeconds: true,
+            time_24hr: true,
+            dateFormat: "Y-m-d H:i:S",
+            defaultDate: val.value,
+        });
+                console.log(Object.keys(val));
+            }
             if($('#no_late_submission').is(':checked') && $(val).attr('name') === 'late_days') {
                 $(val).val('0');
             }
