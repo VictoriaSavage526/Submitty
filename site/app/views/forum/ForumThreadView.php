@@ -377,6 +377,7 @@ HTML;
 				$(function() {
 					generateCodeMirrorBlocks(document);
 				});
+
 			</script>
 
 			</div>
@@ -439,6 +440,7 @@ HTML;
 HTML;
 					$first = true;
 					$first_post_id = 1;
+					$attachmentButton = array();
 					if($display_option == "tree"){
 						$order_array = array();
 						$reply_level_array = array();
@@ -466,6 +468,7 @@ HTML;
 						}
 						$i = 0;
 						$first = true;
+						
 						foreach($order_array as $ordered_post){
 							foreach($posts as $post){
 								if($post["id"] == $ordered_post){
@@ -475,7 +478,7 @@ HTML;
 										$reply_level = $reply_level_array[$i];
 									}
 										
-									$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option, $includeReply);
+									$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option, $includeReply, $attachmentButton);
 									break;
 								}						
 							}
@@ -490,16 +493,25 @@ HTML;
 								$thread_id = $post["thread_id"];
 							}
                             $first_post_id = $this->core->getQueries()->getFirstPostForThread($thread_id)['id'];
-							$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, 1, $display_option, $includeReply);		
+							$return .= $this->createPost($thread_id, $post, $function_date, $title_html, $first, 1, $display_option, $includeReply, $attachmentButton);		
 							if($first){
 								$first= false;
 							}			
 						}
 					}
 			if($includeReply) {
+			$encoded_data_all = htmlentities(json_encode($attachmentButton), ENT_QUOTES | ENT_HTML5);
+			$totalAttachments = 0;
+			foreach ($attachmentButton as $aButton) {
+    			$totalAttachments += count($aButton)-1;
+			}
 			$return .= <<<HTML
 
 			<hr style="border-top:1px solid #999;margin-bottom: 5px;" />
+
+			<a href="#" style="text-decoration:none;display:inline-block;white-space: nowrap;" onclick="loadAllInlineImages('{$encoded_data_all}');" class="btn btn-default btn-sm" type="button">
+   					Load Attachments <span style="float:right;margin-right:0px;min-width: 5px;" class="badge">{$totalAttachments}</span>
+ 			</a>
 			
 					<form style="margin-right:17px;" class="post_reply_from" method="POST" onsubmit="post.disabled=true; post.value='Submitting post...'; return true;" action="{$this->core->buildUrl(array('component' => 'forum', 'page' => 'publish_post'))}" enctype="multipart/form-data">
 						<input type="hidden" name="thread_id" value="{$thread_id}" />
@@ -756,7 +768,7 @@ HTML;
 		return $post_content;
 	}
 
-	public function createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option, $includeReply){
+	public function createPost($thread_id, $post, $function_date, $title_html, $first, $reply_level, $display_option, $includeReply, &$globalAttachments = array()){
 		$current_user = $this->core->getUser()->getId();
 		$post_html = "";
 		$post_id = $post["id"];
@@ -925,13 +937,14 @@ HTML;
 				$file_data[] = array($url, $post["id"] . '_' . $file_count, $name);
 				//openFrame(url, '{$post["id"]}_{$file_count}', '{$name}');
 				$viewers .= <<<HTML
-					<div id="file_viewer_{$post['id']}_{$file_count}">
+					<div style="text-align: center;" id="file_viewer_{$post['id']}_{$file_count}">
 
 					</div>
 HTML;
 				$file_count++;
 			}	
 			$file_data[] = $id;
+			$globalAttachments[] = $file_data;
 			$encoded_data = htmlentities(json_encode($file_data), ENT_QUOTES | ENT_HTML5);
 			$return .= <<<HTML
  				<a href="#" id="{$button_id}" style="text-decoration:none;display:inline-block;white-space: nowrap;" onclick="loadInlineImages('{$encoded_data}');" class="btn btn-default btn-sm" type="button">

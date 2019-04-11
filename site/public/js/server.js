@@ -1286,10 +1286,46 @@ function openFileForum(directory, file, path ){
     window.open(url,"_blank","toolbar=no,scrollbars=yes,resizable=yes, width=700, height=600");
 }
 
-function loadInlineImages(data) {
+function callback_2(a, name){
+    return function(){
+        var contents = $('#file_viewer_' + a + '_iframe').contents();
+        var body = contents.find('body');
+        body.append(`<style>
+img {
+  border: 1px solid #ddd; /* Gray border */
+  border-radius: 4px;  /* Rounded border */
+  padding: 5px; /* Some padding */
+  width: 400px; /* Set a small width */
+}
+
+/* Add a hover effect (blue shadow) */
+img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+</style>`);
+        body.css("text-align", "center");
+        body.append('<h4 style="text-align:center">' + decodeURI(name) + '</h3> <br/>');
+        $('#file_viewer_' + a + '_iframe').height(contents.find('img').height() + 100);
+        //contents.find('img').css()
+    }
+}
+
+function loadAllInlineImages(data) {
+    var json = JSON.parse(data);
+    console.log(data);
+    for(var i = 0; i < json.length; i++) {
+        loadInlineImages(json[i], true);
+    }
+}
+
+function loadInlineImages(data, all = false) {
     //console.log(data);
     try {
-        var json = JSON.parse(data);
+        var json;
+        if(!all)
+            json = JSON.parse(data);
+        else 
+            json = data;
         var length = json.length-1;
         var element = document.getElementById('button_'+json[length]);
         if($('#'+json[length]).is(':visible')) {
@@ -1300,7 +1336,12 @@ function loadInlineImages(data) {
             element.classList.add('active');
         }
         for(var i = 0; i < length; i++) {
+            //json[i][0] => url
+            //json[i][1] => div id
+            //json[i][2] => name
             openFrame(json[i][0], json[i][1], json[i][2]);
+            $('#file_viewer_' + json[i][1] + '_iframe').load(callback_2(json[i][1], json[i][2]));
+            
         }
         return false;
     } catch (err){
