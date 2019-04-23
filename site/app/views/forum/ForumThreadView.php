@@ -60,7 +60,8 @@ HTML;
 		$return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", [
 									"forum_bar_buttons" => $buttons,
 									"show_threads" => false,
-									"thread_exists" => true
+									"thread_exists" => true,
+									"show_filters" => false
 		]);
 
 		$return .= <<<HTML
@@ -274,12 +275,14 @@ HTML;
 								"current_thread" => $currentThread,
 								"forum_bar_buttons" => $default_button,
 								"show_threads" => true,
-								"thread_exists" => true
+								"thread_exists" => true,
+								"show_filters" => true
 	];
 
         if(!$threadExists){
         $button_params["show_threads"] = false;
         $button_params["thread_exists"] = false;
+        $button_params["show_filters"] = false;
         $return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", $button_params);
 		$return .= <<<HTML
 						<h4 style="text-align:center;">A thread hasn't been created yet. Be the first to do so!</h4>
@@ -327,6 +330,7 @@ HTML;
 			);
 					$button_params["forum_bar_buttons"] = array_merge($default_button, $other_buttons);
 					$return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", $button_params);
+					$return .= $this->core->getOutput()->renderTwigTemplate("forum/FilterBar.twig", $buttons_params);
 					$next_page = $initialPageNumber + 1;
 					$prev_page = ($initialPageNumber == 1)?0:($initialPageNumber - 1);
 					$arrowup_visibility = ($initialPageNumber == 1)?"display:none;":"";
@@ -1011,7 +1015,8 @@ HTML;
 	$return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", [
 								"forum_bar_buttons" => $buttons,
 								"show_threads" => false,
-								"thread_exists" => $thread_exists
+								"thread_exists" => $thread_exists,
+								"show_filters" => false
 	]);
 
 
@@ -1083,7 +1088,8 @@ HTML;
 		$return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", [
 									"forum_bar_buttons" => $buttons,
 									"show_threads" => false,
-									"thread_exists" => $thread_exists
+									"thread_exists" => $thread_exists,
+									"show_filters" => false
 		]);
 
 		$return .= <<<HTML
