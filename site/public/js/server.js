@@ -1836,9 +1836,29 @@ function alterShowMergeThreadStatus(newStatus, course) {
     location.reload();
 }
 
+function alterFilterBar(categories, statuses){
+    var categories_value = (categories == null) ? [] : categories;
+    var thread_status_value = (statuses == null) ? [] : statuses;
+
+    if(categories_value.length > 0 || thread_status_value.length > 0){
+        $("#filter_clear").css("display", "inline-block");
+        for (let value of categories_value) {
+            $('#filter_label_category[value="' + value + '"]').css("display", "inline-block");
+        }
+        for (let value of thread_status_value) {
+            $('#filter_label_status[value="' + value + '"]').css("display", "inline-block");
+        }
+    } else {
+        $("#filter_clear").css("display", "none");
+        labels = $('.filter_close').each(function (element){
+            $(this).parent().css("display", "none");
+        });
+    }
+}
 function modifyThreadList(currentThreadId, currentCategoriesId, course, loadFirstPage, success_callback){
     var categories_value = $("#thread_category").val();
     var thread_status_value = $("#thread_status_select").val();
+    alterFilterBar(categories_value, thread_status_value);
     categories_value = (categories_value == null)?"":categories_value.join("|");
     thread_status_value = (thread_status_value == null)?"":thread_status_value.join("|");
     document.cookie = course + "_forum_categories=" + categories_value + ";";

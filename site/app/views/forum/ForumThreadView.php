@@ -330,7 +330,10 @@ HTML;
 			);
 					$button_params["forum_bar_buttons"] = array_merge($default_button, $other_buttons);
 					$return .= $this->core->getOutput()->renderTwigTemplate("forum/ForumBar.twig", $button_params);
-					$return .= $this->core->getOutput()->renderTwigTemplate("forum/FilterBar.twig", $buttons_params);
+					$return .= $this->core->getOutput()->renderTwigTemplate("forum/FilterBar.twig", [
+						"categories" => $categories
+
+					]);
 					$next_page = $initialPageNumber + 1;
 					$prev_page = ($initialPageNumber == 1)?0:($initialPageNumber - 1);
 					$arrowup_visibility = ($initialPageNumber == 1)?"display:none;":"";

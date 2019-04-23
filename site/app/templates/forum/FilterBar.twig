@@ -1,4 +1,28 @@
 <div id="filter_bar">
-	<a class="btn btn-default" title="Clear Filter" onclick="$('#thread_category option, #thread_status_select option').prop('selected', false); updateThreads(true, null);"><i class="fas fa-eraser"></i> Clear Filter</a>
+	<a class="btn btn-default" id ="filter_clear" title="Clear Filter" onclick="$('#thread_category option, #thread_status_select option').prop('selected', false); updateThreads(true, null);"><i class="fas fa-eraser"></i> Clear All </a>
+
+	{% for category in categories %}
+		<span class="label_filter" id="filter_label_category" value="{{category.category_id}}"> {{category.category_desc}} <a class="filter_close" value="{{category.category_id}}"> <i class="fas fa-times" aria-hidden="true"></i></a></span>
+	{% endfor %}
+
+	<span class="label_filter" id="filter_label_status" value="0"> Comment <a class="filter_close" value ="0"><i class="fas fa-times" aria-hidden="true"></i></a></span>
+	<span class="label_filter" id="filter_label_status" value="1"> Resolved <a class="filter_close" value ="1"><i class="fas fa-times" aria-hidden="true"></i></a></span>
+	<span class="label_filter" id="filter_label_status" value="-1"> Unresolved <a class="filter_close" value ="-1"><i class="fas fa-times" aria-hidden="true"></i></a></span>
+
+	<script type="text/javascript">
+		$(".filter_close").click(function(e){
+			var option;
+			if( $(this).parent().attr("id") == "filter_label_category"){
+				option = $('#thread_category option[value=' + $(this).parent().attr('value') + ']');
+			} else if ($(this).parent().attr("id") == "filter_label_status"){
+				option = $('#thread_status_select option[value=' + $(this).parent().attr('value') + ']');	
+			} else {
+				return;
+			}
+			$(this).parent().css("display", "none");
+			option.prop('selected', false);
+            updateThreads(true, null);
+		});
+	</script>
 </div>
 <hr/>

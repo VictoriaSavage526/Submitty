@@ -28,6 +28,12 @@
                 e.preventDefault();
                 var current_selection = $(this).prop('selected');
                 $(this).prop('selected', !current_selection);
+
+                if($(this).parent().attr("id") == "thread_category" && current_selection){
+                    $('#filter_label_category[value=' + $(this).val() + ']').css("display", "none");
+                } else if($(this).parent().attr("id") == "thread_status_select" && current_selection){
+                    $('#filter_label_status[value="' + $(this).val() + '"]').css("display", "none");
+                }
                 updateThreads(true, null);
                 return true;
             });

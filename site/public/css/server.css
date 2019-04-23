@@ -886,6 +886,22 @@ table tr.table-header {
     margin-top: 10px;
 }
 
+#filter_bar {
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.label_filter {
+    display: none;
+    background-color: #d8eef6;
+}
+
+#filter_clear {
+    position: relative;
+    top: 2px;
+    display: none;
+}
 #thread_list {
     padding-right: 0px;
     overflow-y: auto;
