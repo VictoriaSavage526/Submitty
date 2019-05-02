@@ -77,12 +77,15 @@ for i in "${array[@]}"; do
     find ${SUBMITTY_INSTALL_DIR}/site/public -type f -name \*.${i} -exec chmod o+r {} \;
 done
 
-#Setup Email Cron Job
-crontab -u submitty_daemon -l > /tmp/cron_jobs
-grep "python3 ${SUBMITTY_INSTALL_DIR}/sbin/send_email.py" /tmp/cron_jobs || echo "* * * * * python3 ${SUBMITTY_INSTALL_DIR}/sbin/send_email.py" >> /tmp/cron_jobs
-crontab -u submitty_daemon -r
-crontab -u submitty_daemon /tmp/cron_jobs
-rm -f /tmp/cron_jobs
+#Setup Cron Jobs
+python3 ${SUBMITTY_REPOSITORY}/.setup/cron/run_cron.py
+
+
+# crontab -u submitty_daemon -l > /tmp/cron_jobs
+# grep "python3 ${SUBMITTY_INSTALL_DIR}/sbin/send_email.py" /tmp/cron_jobs || echo "* * * * * python3 ${SUBMITTY_INSTALL_DIR}/sbin/send_email.py" >> /tmp/cron_jobs
+# crontab -u submitty_daemon -r
+# crontab -u submitty_daemon /tmp/cron_jobs
+# rm -f /tmp/cron_jobs
 
 # "other" can read & execute these files
 find ${SUBMITTY_INSTALL_DIR}/site/public/vendor -type f -name \*.ttf -exec chmod o+rx {} \;
