@@ -254,7 +254,7 @@ table tr.table-header {
 }
 
 .table>thead>tr {
-    background: #ffffff;
+    background: #ededed;
 }
 
 .table>tbody>tr.info {
