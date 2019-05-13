@@ -1310,10 +1310,13 @@ function loadAllInlineImages(data) {
 function loadInlineImages(data, all = false) {
     try {
         var json;
-        if(!all)
+        if(!all) {
             json = JSON.parse(data);
+        }
         else 
             json = data;
+        console.log('parsed');
+        console.log(data);
         var length = json.length-1;
         var element = document.getElementById('button_'+json[length]);
         if($('#'+json[length]).is(':visible')) {
@@ -1330,13 +1333,15 @@ function loadInlineImages(data, all = false) {
             openFrame(json[i][0], json[i][1], json[i][2]);
             var e = $('#file_viewer_' + json[i][1] + '_iframe');
             if(!e[0].hasAttribute('frame_styled')) {
-                $('#file_viewer_' + json[i][1] + '_iframe').load(formatIFrameInlineImages(json[i][1], json[i][2]));
+            	console.log(e);
+                e.on('load', formatIFrameInlineImages(json[i][1], json[i][2]));
                 e[0].classList.add('frame_styled');
             }
         }
-        return false;
+        //return false;
     } catch (err){
-        var message ='<div class="inner-message alert alert-error" style="position: fixed;top: 40px;left: 50%;width: 40%;margin-left: -20%;" id="theid"><a class="fas fa-times message-close" onClick="removeMessagePopup(\'theid\');"></a><i class="fas fa-times-circle"></i>Could not load image attachments. Please try again.</div>';
+    	console.log(err);
+        var message ='<div class="inner-message alert alert-error" style="position: fixed;top: 40px;left: 50%;width: 40%;margin-left: -20%;" id="theid"><a class="fas fa-times message-close" onClick="removeMessagePopup(\'theid\');"></a><i class="fas fa-times-circle"></i>Could not load image attachments. Please try again.' + data + '</div>';
         $('#messages').append(message);
         return;
     }
