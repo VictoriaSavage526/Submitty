@@ -66,7 +66,7 @@ apt-get install -qqy clang autoconf automake autotools-dev diffstat finger gdb g
 p7zip-full patchutils libpq-dev unzip valgrind zip libmagic-ocaml-dev common-lisp-controller \
 libboost-all-dev javascript-common  libfile-mmagic-perl libgnupg-interface-perl libbsd-resource-perl \
 libarchive-zip-perl gcc g++ g++-multilib jq libseccomp-dev libseccomp2 seccomp junit flex bison spim \
-poppler-utils
+poppler-utils libzbar0
 
 apt-get install -qqy ninja-build
 

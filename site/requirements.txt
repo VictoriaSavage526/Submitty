@@ -1,0 +1,7 @@
+# These are for scripts run under cgi-bin/ and are installed under
+# submitty_cgi
+
+python-pam==1.8.4
+PyPDF2==1.26.0
+pdf2image==1.5.4
+xlsx2csv==0.7.6

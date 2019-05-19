@@ -1,0 +1,4 @@
+# We install python_submitty_utils globally so we install these dependencies
+# globally as well
+
+tzlocal==1.5.1

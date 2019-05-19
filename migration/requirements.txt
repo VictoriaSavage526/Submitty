@@ -1,0 +1,3 @@
+# the migrator is run as root and so we install these dependencies globally
+SQLAlchemy==1.3.3
+psycopg2-binary==2.8.2

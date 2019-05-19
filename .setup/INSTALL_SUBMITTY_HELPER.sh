@@ -74,7 +74,6 @@ for i in "${DAEMONS[@]}"; do
     declare is_${i}_active_before=$?
 done
 
-
 ################################################################################################################
 ################################################################################################################
 # RUN THE SYSTEM AND DATABASE MIGRATIONS
@@ -88,27 +87,9 @@ if [ ${WORKER} == 0 ]; then
     chown root:root ${SUBMITTY_INSTALL_DIR}/migrations
     chmod 550 -R ${SUBMITTY_INSTALL_DIR}/migrations
 
+    (umask 0022 && pip3 install -q -r ${SUBMITTY_REPOSITORY}/migration/requirements.txt)
     python3 ${SUBMITTY_REPOSITORY}/migration/run_migrator.py -e system -e master -e course migrate
 fi
-
-################################################################################################################
-################################################################################################################
-# INSTALL PYTHON SUBMITTY UTILS AND SET PYTHON PACKAGE PERMISSIONS
-
-echo -e "Install python_submitty_utils"
-
-pushd ${SUBMITTY_REPOSITORY}/python_submitty_utils
-pip3 install .
-# Setting the permissions are necessary as pip uses the umask of the user/system, which
-# affects the other permissions (which ideally should be o+rx, but Submitty sets it to o-rwx).
-# This gets run here in case we make any python package changes.
-find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
-find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
-find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
-find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
-
-popd > /dev/null
-
 
 #############################################################
 # Re-Read other variables from submitty.json and submitty_users.json
@@ -130,6 +111,32 @@ PHP_GID=$(jq -r '.php_gid' ${SUBMITTY_INSTALL_DIR}/config/submitty_users.json)
 CGI_USER=$(jq -r '.cgi_user' ${SUBMITTY_INSTALL_DIR}/config/submitty_users.json)
 DAEMONPHP_GROUP=$(jq -r '.daemonphp_group' ${SUBMITTY_INSTALL_DIR}/config/submitty_users.json)
 DAEMONCGI_GROUP=$(jq -r '.daemoncgi_group' ${SUBMITTY_INSTALL_DIR}/config/submitty_users.json)
+
+################################################################################################################
+################################################################################################################
+# INSTALL PYTHON PACKAGES SUBMITTY UTILS AND SET PYTHON PACKAGE PERMISSIONS
+
+echo -e "Install python_submitty_utils"
+
+pushd ${SUBMITTY_REPOSITORY}/python_submitty_utils
+(umask 0022 && pip3 install -q -r requirements.txt && pip3 install .)
+# Setting the permissions are necessary as pip uses the umask of the user/system, which
+# affects the other permissions (which ideally should be o+rx, but Submitty sets it to o-rwx).
+# This gets run here in case we make any python package changes.
+find /usr/local/lib/python*/dist-packages -type d -exec chmod 755 {} +
+find /usr/local/lib/python*/dist-packages -type f -exec chmod 755 {} +
+find /usr/local/lib/python*/dist-packages -type f -name '*.py*' -exec chmod 644 {} +
+find /usr/local/lib/python*/dist-packages -type f -name '*.pth' -exec chmod 644 {} +
+
+popd > /dev/null
+
+################################################################################################################
+################################################################################################################
+# INSTALL ALL OTHER PYTHON REQUIREMENTS
+
+(umask 0022 && pip3 install -q -r ${SUBMITTY_REPOSITORY}/.setup/requirements.txt)
+su - ${CGI_USER} -c "(umask 0022 && pip3 install -q -r ${SUBMITTY_REPOSITORY}/site/requirements.txt)"
+su - ${DAEOMN_USER} -c "(umask 0022 && pip3 install -q --user -r ${SUBMITTY_REPOSITORY}/autograder/requirements.txt)"
 
 ########################################################################################################################
 ########################################################################################################################

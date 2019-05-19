@@ -172,41 +172,18 @@ source ${CURRENT_DIR}/distro_setup/setup_distro.sh
 # PYTHON PACKAGE SETUP
 #########################
 
-pip3 install -U pip
-pip3 install python-pam
-pip3 install PyYAML
-pip3 install psycopg2-binary
-pip3 install sqlalchemy
-pip3 install pylint
-pip3 install psutil
-pip3 install python-dateutil
-pip3 install watchdog
-pip3 install xlsx2csv
-pip3 install pause
-pip3 install paramiko
-pip3 install tzlocal
-pip3 install PyPDF2
-pip3 install distro
+(umask 0022 && pip3 install -U pip)
+(umask 0022 && pip3 install -r ${CURRENT_DIR}/requirements.txt)
 
 # for Lichen / Plagiarism Detection
-pip3 install parso
+(umask 0022 && pip3 install parso
 
 # Python3 implementation of python-clang bindings (may not work < 6.0)
-pip3 install clang
-
-#libraries for QR code processing:
-#install DLL for zbar
-apt-get install libzbar0 --yes
-
-#python libraries for QR bulk upload
-pip3 install pyzbar
-pip3 install pdf2image
-pip3 install opencv-python
-pip3 install numpy
+(umask 0022 && pip3 install clang
 
 # Install an email catcher
 if [ ${VAGRANT} == 1 ]; then
-    pip3 install nullsmtpd
+    (umask 0022 && pip3 install nullsmtpd pylint)
 fi
 
 #################################################################

@@ -162,16 +162,9 @@ jobs:
         - sudo add-apt-repository -y ppa:ondrej/php; sudo apt-get -qq update;
         - sudo apt-get -y install libapache2-mod-php${PHP_VERSION} php${PHP_VERSION}-pgsql php${PHP_VERSION}-curl; a2enmod php${PHP_VERSION};
         - pip3 install -U pip
-        - pip3 install python-pam
-        - pip3 install PyYAML
-        - pip3 install psycopg2-binary
-        - pip3 install sqlalchemy
         - pip3 install pylint_runner
-        - pip3 install python-dateutil
         - pip3 install selenium
-        - pip3 install pause
-        - pip3 install paramiko
-        - pip3 install psutil
+        - pip3 install -r ${TRAVIS_BUILD_DIR}/.setup/requirements.txt
         - CHROME_VERSION=$(google-chrome --version | egrep -o -e '[0-9]+\.[0-9]+\.[0-9]+')
         - CHROME_DRIVER_VERSION=$(curl -L https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})
         - wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip

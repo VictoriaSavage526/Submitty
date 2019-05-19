@@ -14,24 +14,21 @@ import cgi
 # import cgitb; cgitb.enable()
 import json
 import os
-import subprocess
 import shutil
 import stat
 import PyPDF2
 import sys
 import traceback
-from PyPDF2 import PdfFileReader, PdfFileWriter
 
 try:
     from pdf2image import convert_from_bytes
-    from PIL import Image
 except ImportError as e:
     print("Content-type: application/json")
     print()
     message = "Error from pdf_check_.cgi:\n"
     message += "One or more required python modules not installed correctly\n"
-    message += traceback.format_exc() 
-    print(json.dumps({"valid" : False, "message" : message}))
+    message += traceback.format_exc()
+    print(json.dumps({"valid": False, "message": message}))
     sys.exit(1)
 # from grade_item.py
 def add_permissions(item,perms):
