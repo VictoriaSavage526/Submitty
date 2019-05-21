@@ -18,4 +18,8 @@ tzlocal==1.5.1
 
 # This gets installed as python3-yaml as a dependency of
 # netplan.io so we cannot install it through pip
+<<<<<<< Updated upstream
 # PyYAML==5.1.0
+=======
+# PyYAML==5.1.0
+>>>>>>> Stashed changes
