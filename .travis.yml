@@ -38,17 +38,11 @@ jobs:
         - travis_retry composer install --prefer-dist --no-interaction
         - popd
         - pip3 install -U pip
-        - pip3 install python-pam
-        - pip3 install PyYAML
-        - pip3 install psycopg2-binary
-        - pip3 install sqlalchemy
+        # Install PyYAML that's equivalent to python3-yaml
+        - pip3 install PyYAML==3.12
         - pip3 install pylint_runner
-        - pip3 install python-dateutil
         - pip3 install selenium
-        - pip3 install pause
-        - pip3 install tzlocal
-        - pip3 install paramiko
-        - pip3 install psutil
+        - pip3 install -r ${TRAVIS_BUILD_DIR}/.setup/requirements.txt
       script: skip
     - <<: *00-cache
       php: 7.3
@@ -162,6 +156,8 @@ jobs:
         - sudo add-apt-repository -y ppa:ondrej/php; sudo apt-get -qq update;
         - sudo apt-get -y install libapache2-mod-php${PHP_VERSION} php${PHP_VERSION}-pgsql php${PHP_VERSION}-curl; a2enmod php${PHP_VERSION};
         - pip3 install -U pip
+        # Install PyYAML that's equivalent to python3-yaml
+        - pip3 install PyYAML==3.12
         - pip3 install pylint_runner
         - pip3 install selenium
         - pip3 install -r ${TRAVIS_BUILD_DIR}/.setup/requirements.txt
@@ -259,11 +255,11 @@ jobs:
         - sudo ln -s $(which clang) /usr/bin/clang
         - sudo ln -s $(which clang++) /usr/bin/clang++
         - pip3 install -U pip
-        - pip3 install PyYAML
-        - pip3 install python-dateutil
-        - pip3 install paramiko
-        - pip3 install psycopg2-binary
-        - pip3 install sqlalchemy
+        # Install PyYAML that's equivalent to python3-yaml
+        - pip3 install PyYAML==3.12
+        - pip3 install pylint_runner
+        - pip3 install selenium
+        - pip3 install -r ${TRAVIS_BUILD_DIR}/.setup/requirements.txt
         - pushd ${TRAVIS_BUILD_DIR}/python_submitty_utils
         - pip3 install .
         - popd

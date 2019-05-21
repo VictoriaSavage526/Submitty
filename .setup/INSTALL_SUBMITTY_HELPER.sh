@@ -18,6 +18,7 @@
 # directory and configuration directory.
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 CONF_DIR=${THIS_DIR}/../../../config
+DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 
 SUBMITTY_REPOSITORY=$(jq -r '.submitty_repository' ${CONF_DIR}/submitty.json)
 SUBMITTY_INSTALL_DIR=$(jq -r '.submitty_install_dir' ${CONF_DIR}/submitty.json)
@@ -134,8 +135,10 @@ popd > /dev/null
 ################################################################################################################
 # INSTALL ALL OTHER PYTHON REQUIREMENTS
 
+echo -e "Installing the python dependencies"
+
 (umask 0022 && pip3 install -q -r ${SUBMITTY_REPOSITORY}/.setup/requirements.txt)
-su - ${CGI_USER} -c "(umask 0022 && pip3 install -q -r ${SUBMITTY_REPOSITORY}/site/requirements.txt)"
+su - ${CGI_USER} -c "(umask 0022 && pip3 install --user -r ${SUBMITTY_REPOSITORY}/site/requirements.txt)"
 su - ${DAEOMN_USER} -c "(umask 0022 && pip3 install -q --user -r ${SUBMITTY_REPOSITORY}/autograder/requirements.txt)"
 
 ########################################################################################################################

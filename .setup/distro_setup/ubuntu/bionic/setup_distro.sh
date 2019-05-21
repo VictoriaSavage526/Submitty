@@ -18,7 +18,7 @@ fi
 apt-get -qqy update
 
 apt-get install -qqy apt-transport-https ca-certificates curl software-properties-common
-apt-get install -qqy python python-dev python3 python3-dev libpython3.6
+apt-get install -qqy python python-dev python3 python3-dev libpython3.6 python3-yaml
 
 ############################
 # NTP: Network Time Protocol

@@ -7,17 +7,17 @@ if [[ "$UID" -ne "0" ]] ; then
 fi
 
 SOURCE="${BASH_SOURCE[0]}"
-CURRENT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DISTRO_SETUP_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 DISTRO=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 VERSION=$(lsb_release -sc | tr '[:upper:]' '[:lower:]')
 
-if [ ! -d ${CURRENT_DIR}/${DISTRO}/${VERSION} ]; then
+if [ ! -d ${DISTRO_SETUP_DIR}/${DISTRO}/${VERSION} ]; then
     (>&2 echo "Unknown distro: ${DISTRO} ${VERSION}")
     exit 1
 fi
 
 echo "Setting up distro: ${DISTRO} ${VERSION}"
-source ${CURRENT_DIR}/${DISTRO}/${VERSION}/setup_distro.sh
+source ${DISTRO_SETUP_DIR}/${DISTRO}/${VERSION}/setup_distro.sh
 
 # Install pip after we've installed python within the setup_distro.sh
 if [ ! -x "$(command -v pip2)" ] || [ ! -x "$(command -v pip3)" ]; then
@@ -40,6 +40,11 @@ if [ -f /tmp/get-pip.py ]; then
     rm -f /tmp/get-pip.py
 fi
 
+# Install global python dependencies here. This is necessary as some
+# of the apt-gets might pull in the python3-<package> which then prevents
+# us from ever upgrading it through pip
+(umask 0022 && pip3 install -r ${CURRENT_DIR}/requirements.txt)
+
 # Read through our arguments to get "extra" packages to install for our distro
 # ${@} are populated by whatever calls install_system.sh which then sources this
 # script.
@@ -47,9 +52,9 @@ IFS=',' read -ra ADDR <<< "${@}"
 if [ ${#ADDR[@]} ]; then
     echo "Installing extra packages..."
     for i in "${ADDR[@]}"; do
-        if [ -f ${CURRENT_DIR}/${DISTRO}/${VERSION}/${i}.sh ]; then
-            echo "Running ${CURRENT_DIR}/${DISTRO}/${VERSION}/${i}.sh"
-            source ${CURRENT_DIR}/${DISTRO}/${VERSION}/${i}.sh
+        if [ -f ${DISTRO_SETUP_DIR}/${DISTRO}/${VERSION}/${i}.sh ]; then
+            echo "Running ${DISTRO_SETUP_DIR}/${DISTRO}/${VERSION}/${i}.sh"
+            source ${DISTRO_SETUP_DIR}/${DISTRO}/${VERSION}/${i}.sh
         else
             echo "Could not find ${i}.sh for ${DISTRO} ${VERSION}"
         fi

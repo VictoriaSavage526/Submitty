@@ -181,7 +181,7 @@ source ${CURRENT_DIR}/distro_setup/setup_distro.sh
 # Python3 implementation of python-clang bindings (may not work < 6.0)
 (umask 0022 && pip3 install clang
 
-# Install an email catcher
+# Install an email catcher and linter
 if [ ${VAGRANT} == 1 ]; then
     (umask 0022 && pip3 install nullsmtpd pylint)
 fi
