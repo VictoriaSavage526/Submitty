@@ -14,5 +14,8 @@ pdf2image==1.5.4
 pyzbar==0.1.8
 opencv-python==4.1.0.25
 distro==1.4.0
-PyYAML==5.1.0
 tzlocal==1.5.1
+
+# This gets installed as python3-yaml as a dependency of
+# netplan.io so we cannot install it through pip
+# PyYAML==5.1.0
