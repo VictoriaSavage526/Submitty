@@ -261,14 +261,14 @@ jobs:
         - source ${TRAVIS_BUILD_DIR}/.setup/travis/before_install.sh
         - eval "${MATRIX_EVAL}"
       install:
-        - export LLVM_ARCHIVE_PATH=${HOME}/clang+llvm.tar.xz
-        - wget http://releases.llvm.org/${CLANG_VER}/clang+llvm-${CLANG_VER}-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ${LLVM_ARCHIVE_PATH}
-        - mkdir ${HOME}/clang+llvm
-        - tar xf ${LLVM_ARCHIVE_PATH} -C ${HOME}/clang+llvm --strip-components 1
-        - export PATH=${HOME}/clang+llvm/bin:${PATH}
+        # - export LLVM_ARCHIVE_PATH=${HOME}/clang+llvm.tar.xz
+        # - wget http://releases.llvm.org/${CLANG_VER}/clang+llvm-${CLANG_VER}-x86_64-linux-gnu-ubuntu-14.04.tar.xz -O ${LLVM_ARCHIVE_PATH}
+        # - mkdir ${HOME}/clang+llvm
+        # - tar xf ${LLVM_ARCHIVE_PATH} -C ${HOME}/clang+llvm --strip-components 1
+        # - export PATH=${HOME}/clang+llvm/bin:${PATH}
         # Create symlink so that it's in expected location for whitelist
-        - sudo ln -s $(which clang) /usr/bin/clang
-        - sudo ln -s $(which clang++) /usr/bin/clang++
+        # - sudo ln -s $(which clang) /usr/bin/clang
+        # - sudo ln -s $(which clang++) /usr/bin/clang++
         - pip3 install -U pip
         - pip3 install PyYAML
         - pip3 install python-dateutil
