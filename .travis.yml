@@ -289,11 +289,15 @@ jobs:
     - <<: *04-integration
       env: 
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-      if: branch = master OR type = pull_request
+      # if: branch = master OR type = pull_request
     - <<: *04-integration
       env: 
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
-      if: branch = master OR type = pull_request
+      # if: branch = master OR type = pull_request
+    - <<: *04-integration
+      env: 
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      # if: branch = master OR type = pull_request
 
 notifications:
   email: false
