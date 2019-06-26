@@ -239,10 +239,11 @@ jobs:
             - sourceline: "deb http://archive.ubuntu.com/ubuntu trusty-updates multiverse"
             - ubuntu-toolchain-r-test
           packages:
-            - build-essential
+            - make
             - automake
             - cmake
-            - g++-multilib
+            - dpkg-dev
+            - libc6-dev
             - libseccomp2
             - seccomp
             - libseccomp-dev
