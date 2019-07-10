@@ -248,6 +248,7 @@ void WriteToResultsJSON(const TestCase &my_testcase,
                         const std::string &testcase_label,
                         const std::string &testcase_message,
                         int testcase_pts,
+                        nlohmann::json autograder_messages,
                         nlohmann::json &all_testcases) {
 
   nlohmann::json tc_j;
@@ -258,6 +259,10 @@ void WriteToResultsJSON(const TestCase &my_testcase,
   }
   if (autocheck_js.size() > 0) {
     tc_j["autochecks"] = autocheck_js;
+  }
+
+  if (autograder_messages.size() > 0) {
+    tc_j["autograder_messages"] = autograder_messages;
   }
 
   if (testcase_label != "") tc_j["testcase_label"] = testcase_label;
@@ -316,6 +321,7 @@ void ValidateATestCase(nlohmann::json config_json, int which_testcase,
     nlohmann::json autocheck_js;
     int testcase_pts = 0;
     bool view_testcase = true;
+    nlohmann::json autograder_messages = nlohmann::json::array();
 
     if (my_testcase.isSubmissionLimit()) {
       int max = my_testcase.getMaxSubmissions();
@@ -348,6 +354,24 @@ void ValidateATestCase(nlohmann::json config_json, int which_testcase,
         autocheck_j["description"] = "Execution Logfile";
         autocheck_js.push_back(autocheck_j);
       }
+
+      if (fileExists && !fileEmpty){
+        std::ifstream input( execute_logfile );
+        for( std::string line; getline( input, line ); ){
+          if( line.find("ERROR:") != std::string::npos ){
+            nlohmann::json new_message;
+            new_message["type"] = "failure";
+            new_message["message"] = line;
+            autograder_messages.push_back(new_message);
+          } else if(line.find("WARNING:") != std::string::npos ){
+            nlohmann::json new_message;
+            new_message["type"] = "warning";
+            new_message["message"] = line;
+            autograder_messages.push_back(new_message);
+          }
+        }
+      }
+
       assert (my_score <= 1.00002);
       my_score += 0.00001;
       assert (my_score <= 1.00002);
@@ -383,6 +407,7 @@ void ValidateATestCase(nlohmann::json config_json, int which_testcase,
     my_testcase.getTestcaseLabel(),
     testcase_message,
     testcase_pts,
+    autograder_messages,
     all_testcases);
 
     WriteToGradefile(which_testcase,my_testcase,gradefile,testcase_pts);

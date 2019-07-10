@@ -26,6 +26,8 @@ class AutoGradedTestcase extends AbstractModel {
     protected $view = true;
     /** @property @var string The message to show the user for this testcase */
     protected $message = '';
+    /** @property @var string Messages produced by the autograder for this testcase */
+    protected $autograder_messages = '';
 
     /** @property @var GradeableAutocheck[] */
     protected $autochecks = [];
@@ -41,6 +43,7 @@ class AutoGradedTestcase extends AbstractModel {
         // Load simple fields
         $this->view = boolval($details['view_testcase'] ?? true);
         $this->message = Utils::prepareHtmlString($details['testcase_message'] ?? '');
+        $this->autograder_messages = $details['autograder_messages'] ?? NULL;
 
         // Load the autochecks
         if (isset($details['autochecks'])) {

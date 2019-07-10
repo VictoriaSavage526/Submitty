@@ -1,5 +1,12 @@
 {% import _self as self %}
 
+{# Render any global messages #}
+{% if autograder_messages | length > 0 %}
+<div class="box-block">
+{{ self.render_messages(autograder_messages) }}
+</div>
+{% endif %}
+
 {% for check in checks %}
     {% if loop.index0 != 0 %}
         <div class="clear"></div>

@@ -230,6 +230,7 @@ class AutoGradingView extends AbstractView {
             "checks" => $checks,
             "display_version" => $version->getVersion(),
             "index" => $testcase->getTestcase()->getIndex(),
+            "autograder_messages" => $testcase->getAutograderMessages(),
             "who" => $who,
             "popup_css_file" => $popup_css_file
         ]);
