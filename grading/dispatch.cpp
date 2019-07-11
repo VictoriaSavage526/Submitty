@@ -1180,7 +1180,7 @@ TestResults* dispatch::ImageDiff_doit(const TestCase &tc, const nlohmann::json& 
   }
    else{
     // MESSAGE_NONE, MESSAGE_FAILURE, MESSAGE_WARNING, MESSAGE_SUCCESS, MESSAGE_INFORMATION
-         return new TestResults(1.0, {std::make_pair(MESSAGE_INFORMATION, "SUCCESS: Your image was close enough to your instructor's!")});
+         return new TestResults(1.0, {std::make_pair(MESSAGE_SUCCESS, "SUCCESS: Your image was close enough to your instructor's!")});
   }
 
 
@@ -1293,6 +1293,7 @@ TestResults* dispatch::diffLineSwapOk_doit (const nlohmann::json& j,const std::s
 
 TestResults* dispatch::diff_doit (const TestCase &tc, const nlohmann::json& j) {
   std::vector<std::pair<TEST_RESULTS_MESSAGE_TYPE, std::string> > messages;
+
   std::string student_file_contents;
   std::string expected_file_contents;
   if (!openStudentFile(tc,j,student_file_contents,messages)) {
