@@ -31,14 +31,14 @@
             <li><b>Username:</b> {{ user.getId() }}</li>
             <li class="flex-row">
                 <span><b>First Name:</b>&nbsp;{{ user.getDisplayedFirstName() }}</span>
-                <a onclick="userNameChange()"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                <a onclick="userNameChange()"><i class="fas fa-pencil-alt" aria-label="{{ ["edit", user.getId()]|join(' ') }}"></i></a>
             </li>
             <li><b>Last Name:</b> {{ user.getDisplayedLastName() }}</li>
             <li><b>Email:</b> {{ user.getEmail() }}</li>
             {% if show_change_password %}
                 <li class="flex-row">
                     <b>Change Password</b>
-                    <a onclick="passwordChange()"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                    <a onclick="passwordChange()"><i class="fas fa-pencil-alt" aria-label="{{ ["edit","password","for", user.getId()]|join(' ') }}"></i></a>
                 </li>
             {% endif %}
         </ul>

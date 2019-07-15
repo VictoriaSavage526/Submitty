@@ -35,7 +35,7 @@
 							<td style="text-align: left">{{ grader.getDisplayedLastName() }}</td>
 							<td>{{ groups[grader.getGroup()].name }}</td>
 							<td>{{ grader.getGradingRegistrationSections()|join(", ") }}</td>
-							<td><a onclick="editUserForm('{{ grader.getId() }}');" aria-label="edit user {{ grader.getId() }}"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a></td>
+							<td><a onclick="editUserForm('{{ grader.getId() }}');" aria-label="edit user {{ grader.getId() }}"><i class="fas fa-pencil-alt" aria-label="{{ ["edit","user", grader.getId()]|join(' ') }}"></i></a></td>
 						</tr>
 					{% endfor %}
 				{% else %}
