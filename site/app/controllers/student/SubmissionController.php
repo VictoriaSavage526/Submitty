@@ -108,7 +108,7 @@ class SubmissionController extends AbstractController {
         }
     }
     private function requestRegrade() {
-        $content = $_POST['replyTextArea'] ?? '';
+        $content = $_POST['thread_post_content'] ?? '';
         $gradeable_id = $_REQUEST['gradeable_id'] ?? '';
         $submitter_id = $_REQUEST['submitter_id'] ?? '';
 
@@ -147,7 +147,7 @@ class SubmissionController extends AbstractController {
     }
 
     private function makeRequestPost() {
-        $content = str_replace("\r", "", $_POST['replyTextArea']);
+        $content = str_replace("\r", "", $_POST['thread_post_content']);
         $gradeable_id = $_REQUEST['gradeable_id'] ?? '';
         $submitter_id = $_REQUEST['submitter_id'] ?? '';
 
@@ -224,7 +224,7 @@ class SubmissionController extends AbstractController {
     }
 
     private function changeRequestStatus() {
-        $content = str_replace("\r", "", $_POST['replyTextArea']);
+        $content = str_replace("\r", "", $_POST['thread_post_content']);
         $gradeable_id = $_REQUEST['gradeable_id'] ?? '';
         $submitter_id = $_REQUEST['submitter_id'] ?? '';
 

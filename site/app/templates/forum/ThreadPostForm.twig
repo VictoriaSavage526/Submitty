@@ -22,53 +22,42 @@
 <br/>
 {% if show_post %}
     <div style="margin-bottom:10px;" class="form-group row position-relative">
-        <button id="link_btn" type="button" title="Insert a link" onclick="addMarkdownCode(1, $(this).closest('.thread-post-form').find('[name=thread_post_content]'))" style="margin-right:10px;" class="btn btn-default">Link <i class="fas fa-link fa-1x"></i></button>
-        <button id="code_btn" title="Insert a code segment" type="button" onclick="addMarkdownCode(0, $(this).closest('.thread-post-form').find('[name=thread_post_content]'))" class="btn btn-default">Code <i class="fas fa-code fa-1x"></i></button>
-    {% if show_merge_thread_button and core.getUser().accessGrading() %}
-        <a class="btn btn-primary" id="merge-thread-btn" title="Merge Threads" onclick="$('#merge-threads').css('display', 'block');">Merge Threads</a>
-    {% endif %}
-    {% if show_lock_date and core.getUser().getGroup() <= 2 %}
-        <label id="label_lock_thread" for="lock_thread_date"> Lock Thread Date
-            <input class="date_picker" placeholder="Lock Thread Date" name="lock_thread_date" id="lock_thread_date" type="text">
-        </label>
-        <script>
-            $(document).ready(function () {
-                        flatpickr(".date_picker", {
-                            plugins: [ShortcutButtonsPlugin(
-                                    {
-                                        button: [
-                                            {
-                                                label: "Now"
-                                            }, 
-                                            {
-                                                label: "End of time"
-                                            }
-                                        ],
-                                        label: "or",
-                                        onClick: (index, fp) => {
-                                            let date;
-                                            switch (index) {
-                                                case 0: 
-                                                    date = new Date();
-                                                    break;
-                                                case 1: 
-                                                    date = new Date("9998-01-01 00:00:00");
-                                                    break;
-                                            }
-                                            fp.setDate(date, true);
+        {% include "forum/LinkAndCodeButtons.twig"  %}
+        {% if show_merge_thread_button and core.getUser().accessGrading() %}
+            <a class="btn btn-primary" id="merge-thread-btn" title="Merge Threads" onclick="$('#merge-threads').css('display', 'block');">Merge Threads</a>
+        {% endif %}
+        {% if show_lock_date and core.getUser().getGroup() <= 2 %}
+            <label id="label_lock_thread" for="lock_thread_date"> Lock Thread Date
+                <input class="date_picker" placeholder="Lock Thread Date" name="lock_thread_date" id="lock_thread_date" type="text">
+            </label>
+            <script>
+                $(document).ready(function () {
+                    flatpickr(".date_picker", {
+                        plugins: [ShortcutButtonsPlugin({
+                                    button: [{label: "Now"}, {label: "End of time"}],
+                                    label: "or",
+                                    onClick: (index, fp) => {
+                                        let date;
+                                        switch (index) {
+                                            case 0:
+                                                date = new Date();
+                                                break;
+                                            case 1:
+                                                date = new Date("9998-01-01 00:00:00");
+                                                break;
                                         }
+                                        fp.setDate(date, true);
                                     }
-                                )],
-                            allowInput: true,
-                            enableTime: true,
-                            enableSeconds: true,
-                            time_24hr: true,
-                            dateFormat: "Y-m-d H:i:S"
-                        });
-            })
-        </script>
-
-    {% endif %}
+                                })],
+                        allowInput: true,
+                        enableTime: true,
+                        enableSeconds: true,
+                        time_24hr: true,
+                        dateFormat: "Y-m-d H:i:S"
+                    });
+                })
+            </script>
+        {% endif %}
     </div>
     <div class="form-group row">
         {% set min_height = (post_textarea_large?"40vmin":"100px") %}
@@ -104,51 +93,14 @@
     </div>
 {% endif %}
 <div class="form-group row thread-attachment-container">
-    {% if post_box_id %}
-        <span class="inline-block">
-            {# uploadID and input_fileID required for drag-and-drop.js #}
-            <div class="upload_attachment_box cursor-pointer" id="upload{{ post_box_id }}">
-                <label id="file_input_label" class="btn btn-default">Upload Attachment</label>
-                <input type="file" accept="image/*" id="input_file{{ post_box_id }}" style="display: none;" onchange="addFilesFromInput({{ post_box_id }});testAndGetAttachments({{ post_box_id }}, true);" multiple />
-                <br>
-            </div>
-        </span>
-        <br>
-
-        {% if attachment_script %}
-            {# To be executed at last attachment box #}
-            <script type="text/javascript">
-                $(function() {
-                    $('div.upload_attachment_box').on('DOMNodeInserted',function(e){
-                        var part = get_part_number(e);
-                        if(isNaN(parseInt(part))) {
-                            return;
-                        }
-                        var target = $(e.target);
-                        var file_object = null;
-                        var filename = target.attr("fname");
-                        for (var j = 0; j < file_array[part-1].length; j++){
-                            if (file_array[part-1][j].name == filename) {
-                                file_object = file_array[part-1][j];
-                                break;
-                            }
-                        }
-                        var image = document.createElement('div');
-                        $(image).addClass("thumbnail");
-                        $(image).css("background-image", "url("+window.URL.createObjectURL(file_object)+")");
-                        target.prepend(image);
-                    });
-
-                    // Attachments on Create Thread
-                    var part = "{{ post_box_id }}";
-                    createArray(part);
-                    $(".upload_attachment_box").each(function() {
-                        this.addEventListener("click", clicked_on_box, false);
-                    });
-                });
-            </script>
+    <div>
+        {% if post_box_id %}
+            {% include "forum/UploadAttachment.twig" with {
+                'post_box_id': post_box_id,
+                'attachment_script': attachment_script
+            } %}
         {% endif %}
-    {% endif %}
+    </div>
     <span class="inline-block right-zero position-absolute">
         {% if show_anon %}
             <label for="Anon">Anonymous (to class)?</label> <input type="checkbox" class="thread-anon-checkbox" id="{{ anon_edit_post_id | default('thread_post_anon') }}" name="Anon" value="Anon" data-ays-ignore="true"/>
