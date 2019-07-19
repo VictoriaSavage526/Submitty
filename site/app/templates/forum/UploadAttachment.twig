@@ -1,0 +1,43 @@
+<span class="inline-block">
+        {# uploadID and input_fileID required for drag-and-drop.js #}
+        <div class="upload_attachment_box cursor-pointer" id="upload{{ post_box_id }}">
+            <label id="file_input_label" class="btn btn-default">Upload Attachment</label>
+            <input type="file" accept="image/*" id="input_file{{ post_box_id }}" style="display: none;" onchange="addFilesFromInput({{ post_box_id }});testAndGetAttachments({{ post_box_id }}, true);" multiple />
+            <br>
+        </div>
+</span>
+<br>
+
+{% if attachment_script %}
+    {# To be executed at last attachment box #}
+    <script type="text/javascript">
+        $(function() {
+            $('div.upload_attachment_box').on('DOMNodeInserted',function(e){
+                var part = get_part_number(e);
+                if(isNaN(parseInt(part))) {
+                    return;
+                }
+                var target = $(e.target);
+                var file_object = null;
+                var filename = target.attr("fname");
+                for (var j = 0; j < file_array[part-1].length; j++){
+                    if (file_array[part-1][j].name === filename) {
+                        file_object = file_array[part-1][j];
+                        break;
+                    }
+                }
+                var image = document.createElement('div');
+                $(image).addClass("thumbnail");
+                $(image).css("background-image", "url("+window.URL.createObjectURL(file_object)+")");
+                target.prepend(image);
+            });
+
+            // Attachments on Create Thread
+            var part = "{{ post_box_id }}";
+            createArray(part);
+            $(".upload_attachment_box").each(function() {
+                this.addEventListener("click", clicked_on_box, false);
+            });
+        });
+    </script>
+{% endif %}
