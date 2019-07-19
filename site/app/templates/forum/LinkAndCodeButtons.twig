@@ -1,6 +1,6 @@
-<button id="link_btn" type="button" title="Insert a link" onclick="addMarkdownCode(1, $(this).closest('.thread-post-form').find('[name=thread_post_content]'))" style="margin-right:10px;" class="btn btn-default">
+<button id="link_btn" type="button" title="Insert a link" onclick="addMarkdownCode(1, $(this).closest({{ target }}))" style="margin-right:10px;" class="btn btn-default">
     Link <i class="fas fa-link fa-1x"></i>
 </button>
-<button id="code_btn" title="Insert a code segment" type="button" onclick="addMarkdownCode(0, $(this).closest('.thread-post-form').find('[name=thread_post_content]'))" class="btn btn-default">
+<button id="code_btn" title="Insert a code segment" type="button" onclick="addMarkdownCode(0, $(this).closest({{ target }}))" class="btn btn-default">
     Code <i class="fas fa-code fa-1x"></i>
 </button>

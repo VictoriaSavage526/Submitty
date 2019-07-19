@@ -22,7 +22,9 @@
 <br/>
 {% if show_post %}
     <div style="margin-bottom:10px;" class="form-group row position-relative">
-        {% include "forum/LinkAndCodeButtons.twig"  %}
+        {% include "forum/LinkAndCodeButtons.twig"  with {
+          'target' => '#thread_post_content'
+        } %}
         {% if show_merge_thread_button and core.getUser().accessGrading() %}
             <a class="btn btn-primary" id="merge-thread-btn" title="Merge Threads" onclick="$('#merge-threads').css('display', 'block');">Merge Threads</a>
         {% endif %}
