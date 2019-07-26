@@ -403,7 +403,7 @@ HTML;
                     </div>
                     <div class="form-buttons">
                         <div class="form-button-container">
-                            <a onclick="$('#delete-plagiarism-result-and-config-form').css('display', 'none');" class="btn btn-default">Cancel</a>
+                            <a id="close-button" onclick="$('#delete-plagiarism-result-and-config-form').css('display', 'none');" class="btn btn-default">Cancel</a>
                             <input class="btn btn-danger" type="submit" value="Delete" />
                         </div>
                     </div>
@@ -413,6 +413,7 @@ HTML;
     </div>
     <script>
         $(".popup-window").draggable();
+        $("#close-button").focus();
     </script>
 HTML;
         return $return;       

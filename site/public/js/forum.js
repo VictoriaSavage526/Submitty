@@ -291,6 +291,7 @@ function editPost(post_id, thread_id, shouldEditThread, render_markdown, csrf_to
                 $("#thread_form").prop("ignore-cat",false);
                 $("#category-selection-container").show();
                 $("#thread_status").show();
+                $("#title").focus();
             } else {
                 $("#title").prop('disabled', true);
                 $(".edit_thread").hide();
@@ -298,6 +299,7 @@ function editPost(post_id, thread_id, shouldEditThread, render_markdown, csrf_to
                 $("#thread_form").prop("ignore-cat",true);
                 $("#category-selection-container").hide();
                 $("#thread_status").hide();
+                $("#thread_post_content").focus();
             }
         },
         error: function(){
@@ -481,6 +483,11 @@ function alterShowMergeThreadStatus(newStatus, course) {
     if(!checkAreYouSureForm()) return;
     document.cookie = course + "_show_merged_thread=" + newStatus + "; path=/;";
     location.reload();
+}
+
+function displayFilterPopup() {
+    $('#category_wrapper').css('display','block');
+    $('#thread_category').focus();
 }
 
 function modifyThreadList(currentThreadId, currentCategoriesId, course, loadFirstPage, success_callback){

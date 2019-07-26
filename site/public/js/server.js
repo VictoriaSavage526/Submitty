@@ -219,6 +219,7 @@ function newDeleteCourseMaterialForm(path, file_name) {
     $('[name="delete-course-material-message"]', form).append('<b>'+file_name+'</b>');
     $('[name="delete-confirmation"]', form).attr('action', url);
     form.css("display", "block");
+    $('.close-button').focus();
 }
 
 function newUploadImagesForm() {
@@ -257,6 +258,8 @@ function newUploadCourseMaterialsForm() {
     form.css("display", "block");
     $('[name="upload"]', form).val(null);
 
+    $('#input-provide-full-path').focus();
+
 }
 
 function setFolderRelease(changeActionVariable,releaseDates,id,inDir){
@@ -274,6 +277,8 @@ function setFolderRelease(changeActionVariable,releaseDates,id,inDir){
     inDir = JSON.stringify(inDir);
     $('[name="submit"]',form).attr('data-iden',id);
     $('[name="submit"]',form).attr('data-inDir',inDir);
+
+    $('#date_to_release').focus();
 
 }
 

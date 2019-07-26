@@ -64,6 +64,7 @@ function newUserForm() {
         $("#user_lastname")[0].setCustomValidity("user_lastname is required");
     }
     checkValidEntries();
+    $("#user_id").focus();
 }
 
 //opens modal with initial settings for edit user

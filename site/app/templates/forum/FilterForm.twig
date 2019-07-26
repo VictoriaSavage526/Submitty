@@ -5,7 +5,7 @@
     <i>Please unselect all options for removing filter.</i><br/>
     <div class="text-center">
         <select id="thread_category" name="thread_category" class="form-control height-auto" aria-label="Select thread category" multiple size="10" data-ays-ignore="true">
-        {% for category in categories %}
+            {% for category in categories %}
                 <option value="{{ category.category_id }}" style="color: {{ category.color }}">{{ category.category_desc }}</option>
             {% endfor %}
         </select>
