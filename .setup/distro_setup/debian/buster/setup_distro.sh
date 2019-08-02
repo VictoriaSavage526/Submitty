@@ -7,9 +7,17 @@ if [[ "$UID" -ne "0" ]] ; then
 fi
 
 if [ ${VAGRANT} == 1 ]; then
-    export SUBMISSION_URL='http://192.168.56.111'
-    export DATABASE_PORT=16432
+    export SUBMISSION_URL='http://192.168.56.211'
+    export DATABASE_PORT=25532
 fi
+
+apt-get install -qqy software-properties-common
+
+# Some non-free repos and backports
+add-apt-repository "deb http://ftp.debian.org/debian/ buster main contrib non-free"
+add-apt-repository "deb http://ftp.debian.org/debian buster-backports main"
+
+apt-get update
 
 #################################################################
 # PACKAGE SETUP
@@ -17,8 +25,8 @@ fi
 
 apt-get -qqy update
 
-apt-get install -qqy apt-transport-https ca-certificates curl software-properties-common
-apt-get install -qqy python python-dev python3 python3-dev libpython3.6
+apt-get install -qqy apt-transport-https ca-certificates curl gnupg2 rsync
+apt-get install -qqy python python-dev python3 python3-dev libpython3.7
 
 ############################
 # NTP: Network Time Protocol
@@ -45,7 +53,7 @@ apt-get install -qqy libpam-passwdqc
 # the worker/threaded mode instead)
 
 apt-get install -qqy ssh sshpass unzip
-apt-get install -qqy postgresql-10
+apt-get install -qqy postgresql
 apt-get install -qqy apache2 apache2-suexec-custom libapache2-mod-authnz-external libapache2-mod-authz-unixgroup libapache2-mod-wsgi-py3
 apt-get install -qqy php php-cli php-fpm php-curl php-pgsql php-zip php-mbstring php-xml
 
@@ -63,8 +71,8 @@ apt-get install -qqy scrot
 # these packages (as appropriate.. )
 
 apt-get install -qqy clang autoconf automake autotools-dev diffstat finger gdb git git-man \
-p7zip-full patchutils libpq-dev unzip valgrind zip libmagic-ocaml-dev common-lisp-controller \
-libboost-all-dev javascript-common  libfile-mmagic-perl libgnupg-interface-perl libbsd-resource-perl \
+p7zip-full patchutils libpq-dev unzip valgrind zip libmagic-ocaml-dev \
+libboost-all-dev javascript-common libfile-mmagic-perl libgnupg-interface-perl libbsd-resource-perl \
 libarchive-zip-perl gcc g++ g++-multilib jq libseccomp-dev libseccomp2 seccomp junit flex bison spim \
 poppler-utils
 
@@ -83,8 +91,8 @@ apt-get install -qqy python-clang-6.0
 
 # Install OpenJDK8 Non-Interactively
 echo "installing java8"
-apt-get install -qqy openjdk-8-jdk
-update-java-alternatives --set java-1.8.0-openjdk-amd64
+apt-get install -qqy openjdk-11-jdk
+update-java-alternatives --set java-1.11.0-openjdk-amd64
 
 # Install Image Magick for image comparison, etc.
 apt-get install -qqy imagemagick
@@ -92,23 +100,8 @@ apt-get install -qqy imagemagick
 # miscellaneous usability
 apt-get install -qqy emacs
 
-# fix networking on vagrants 
-# https://bugs.launchpad.net/ubuntu/+source/netplan.io/+bug/1768560
-# When the vagrant box comes with netplan.io 0.40+ we can remove this
-if [ ${VAGRANT} == 1 ]; then
-    # In case they upgrade before we notice, don't run this fix
-    NETPLANIO_VERSION=$(apt-cache policy netplan.io | grep 'Installed' | sed -E 's/^.*: (.*)$/\1/')
-    NPIO_MAJOR=$(echo "$NETPLANIO_VERSION" | cut -d "." -f1)
-    NPIO_MINOR=$(echo "$NETPLANIO_VERSION" | cut -d "." -f2)
-    if [ "$NPIO_MAJOR" -eq 0 -a "$NPIO_MINOR" -lt 40 ]; then
-        # Update netplan.io
-        echo "Detected old version of netplan.io (${NETPLANIO_VERSION})... updating it automatically"
-        apt-get install -y netplan.io=0.40.1~18.04.4
-    fi
-fi
-
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 apt-get update
 apt-get install -qqy docker-ce docker-ce-cli containerd.io
 systemctl status docker | head -n 100

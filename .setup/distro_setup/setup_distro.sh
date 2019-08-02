@@ -63,6 +63,8 @@ if [ ${VAGRANT} == 1 ]; then
     # Ubuntu/Debian share this stuff, CentOS does not
     if [ -d /etc/update-motd.d ]; then
         chmod -x /etc/update-motd.d/*
+    fi
+    if [ -f /etc/update-motd.d/00-header ]; then
         chmod +x /etc/update-motd.d/00-header
     fi
     if [ -f /usr/share/landscape/landscape-sysinfo.wrapper ]; then
@@ -75,6 +77,7 @@ if [ ${VAGRANT} == 1 ]; then
     CGI_LINE=$(printf "##    %-51s ##" "${SUBMISSION_URL}/cgi-bin (cgi-bin scripts)")
     GIT_LINE=$(printf "##    %-51s ##" "${SUBMISSION_URL}/git (git)")
     DATABASE_LINE=$(printf "##    %-51s ##" "localhost:${DATABASE_PORT}")
+    
     # Set our cool MOTD to help people get started
     echo -e "
  _______  __   __  _______  __   __  ___   _______  _______  __   __
