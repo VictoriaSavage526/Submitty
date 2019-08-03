@@ -52,7 +52,7 @@ Vagrant.configure(2) do |config|
     ubuntu.vm.network 'private_network', ip: '192.168.56.111'
   end
 
-  config.vm.define 'debian-10', primary: false do |debian|
+  config.vm.define 'debian-10' do |debian|
     debian.vm.box = 'bento/debian-10'
     debian.vm.network 'forwarded_port', guest: 5432, host: 25532
     debian.vm.network 'private_network', ip: '192.168.56.211'
