@@ -1,0 +1,98 @@
+.open-all-folder {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+#details-legend {
+    justify-self: center;
+}
+
+#file-container {
+    display: table;
+    margin-top: 1em;
+    width: 100%;
+}
+
+#release-label {
+    display: none;
+}
+
+.file-row, .div-row {
+    display: flex;
+    flex-flow: column-reverse;
+    margin: 0 -30px;
+    padding: 0 30px;
+}
+
+.file-row:not(:last-child), .div-row:not(:last-child) {
+    border-bottom: 1px solid lightgray;
+}
+
+.file-viewer, .div-viewer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.material-indent {
+    display: none;
+}
+
+.material-name {
+    align-items: center;
+    word-break: break-all;
+}
+
+.material-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.material-icon {
+    padding-right: 5px;
+}
+
+.material-buttons > * {
+    padding-left: 10px;
+}
+
+.date-picker, .div-date {
+    width: 100% !important;
+}
+
+.material-time {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .file-row, .div-row {
+        align-items: stretch;
+        flex-direction: row;
+        border: none !important;
+    }
+
+    .date-cell, .file-viewer, .div-viewer {
+        padding: 0;
+    }
+
+    .date-cell {
+        flex: 0 0 220px;
+        padding: 5px 10px 5px 0;
+    }
+
+    .material-time {
+        display: block;
+    }
+
+    .material-indent {
+        display: block;
+        border-left: 1px solid gray;
+        margin: 0 16px 0 8px;
+        height: 100%;
+    }
+
+    .material-time-icon {
+        display: none;
+    }
+}

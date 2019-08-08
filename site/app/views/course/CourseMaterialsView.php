@@ -120,6 +120,10 @@ class CourseMaterialsView extends AbstractView {
 
         $server_time = (array)DateUtils::getServerTimeJson($this->core);
 
+        $this->core->getOutput()->addInternalCss('coursematerials.css');
+        $this->core->getOutput()->addInternalJs('coursematerials.js');
+        $this->core->getOutput()->addInternalJs('setfolderreleaseform.js');
+
         return $this->core->getOutput()->renderTwigTemplate("course/CourseMaterials.twig", [
             "courseMaterialsArray" => $course_materials_array,
             'date_format' => 'Y-m-d H:i:sO',
