@@ -15,7 +15,7 @@
         {% if userGroup == 1 %}
             <div class="btn-wrapper">
                 {# button to open all of the subfolders and cookie it#}
-                <a href='javascript:setCookie("foldersOpen",openAllDivForCourseMaterials());' class="btn btn-primary">
+                <a href='javascript:setCookie("foldersOpen",openAllDir());' class="btn btn-primary">
                     Open/Close All Folders
                 </a>
                 {# button to set the release dates of all files in the page/course materials #}
@@ -117,14 +117,14 @@
                     <i class="fas fa-download" aria-hidden="true" title="Download the file"></i>
                 </a>
                 {% if userGroup == 1 %}
-                    <a class="material-time-icon" href='javascript:showDateInput("{{ id }}")'>
+                    <a class="material-time-icon" href='javascript:toggleDateInput("{{ id }}")'>
                         <i class="fas fa-clock" aria-hidden="true" title="Time"></i>
                     </a>
                     {{ self.delete_button(folderPath, dir, "Delete the file") }}
                 {% endif %}
             </div>
         </div>
-        <div class="file-viewer-data" id="file_viewerwidth: 100% !important;_{{ id }}" 
+        <div class="file-viewer-data" id="file_viewer_{{ id }}" 
              data-file_name="{{ dir }}" data-file_url="{{ path }}"></div>
     </div>
 {% endmacro %}
@@ -136,11 +136,11 @@
         {{ self.display_files(self, contents, fileShares, fileReleaseDates, id, indent + 1, 
                               title, userGroup, folderPath,inDir, display_file_url) }}
     {% else %}
-        <div class="div-row">
+        <div class="dir-row">
             {% if userGroup == 1 %}
                 <div class="date-cell">
                     {# button to choose release date for all files in folder and subfolders #}
-                    <a class="btn btn-primary material-time div-date" href='javascript:setFolderRelease(
+                    <a class="btn btn-primary material-time dir-date" href='javascript:setFolderRelease(
                             "{{ folderPath }}",
                             "{{ fileReleaseDates[folderPath] }}",
                             "{{ id }}",
@@ -153,12 +153,12 @@
                     </a>
                 </div>
             {% endif %}
-            <div class="div-viewer">
+            <div class="dir-viewer">
                 {% for i in 2 .. indent if indent > 1 %}
                     <div class="material-indent"></div>
                 {% endfor %}
                 {# button to open each folder #}
-                <a id='{{ dir }}' href='javascript:setCookie("{{ folderPath }}",openDivForCourseMaterials("{{ id }}")+"{{ id }}")'>
+                <a id='{{ dir }}' href='javascript:setCookie("{{ folderPath }}",toggleDir("{{ id }}")+"{{ id }}")'>
                     <span class="fas fa-folder material-icon"></span>
                     <span class="material-name">{{ dir | trim }}</span>
                 </a>
@@ -183,11 +183,11 @@
                 </div>
             </div>
         </div>
-        {# <div id='div_viewer_{{ id }}' class="diff-viewer" data-file_name="{{ dir }}"> #}
+        <div id="sub-dir-{{id}}" class="sub-dir">
             {# Recurse #}
             {{ self.display_files(self, contents, fileShares, fileReleaseDates, id, indent + 1, 
                                   title, userGroup, folderPath,inDir, display_file_url) }}
-        {# </div> #}
+        </div>
     {% endif %}
 {% endmacro %}
 

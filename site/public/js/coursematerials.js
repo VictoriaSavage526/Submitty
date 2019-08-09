@@ -169,17 +169,6 @@ function getCookie(cName) {
     return "";
 }
 
-function shareToOther(id, path) {
-    // pass filename to server to record the permission of the file
-    var idName = "#share_checkbox_" + id;
-    if($(idName).is(':checked')) {
-        changePermission(path, '1');
-    }
-    else {
-        changePermission(path, '0');
-    }
-}
-
 function setNewDateTime(me, path) {
     // pass filename to server to record the new date and time of the file to be released
     var newDateTime = $(me).val();
@@ -194,21 +183,6 @@ function setNewDateTime(me, path) {
         },
         error: function(e) {
             console.log("Error getting server time.");
-        }
-    });
-}
-
-function setChildNewDateTime(path, changeDate,handleData) {
-    //change the date and time of the subfiles in the folder with the time chosen for the whole
-    //folder (passed in)
-    var success;
-    success = false;
-    success = changeFolderNewDateTime(path,changeDate,function (output) {
-        if(output){
-            success =true;
-            if(handleData){
-                handleData(success);
-            }
         }
     });
 }
@@ -275,21 +249,6 @@ function newDeleteCourseMaterialForm(path, file_name) {
 
 function openDivForCourseMaterials(num) {
     var elem = $('#div_viewer_' + num);
-    if (elem.hasClass('open')) {
-        elem.hide();
-        elem.removeClass('open');
-        $($($(elem.parent().children()[0]).children()[0]).children()[0]).removeClass('fa-folder-open').addClass('fa-folder');
-        return 'closed';
-    } else {
-        elem.show();
-        elem.addClass('open');
-        $($($(elem.parent().children()[0]).children()[0]).children()[0]).removeClass('fa-folder').addClass('fa-folder-open');
-        return 'open';
-    }
-}
-
-function openAllDivForCourseMaterials() {
-    var elem = $("[id ^= 'div_viewer_']");
     if (elem.hasClass('open')) {
         elem.hide();
         elem.removeClass('open');
@@ -374,7 +333,7 @@ function downloadCourseMaterialZip(dir_name, path) {
 
 function changePermission(filename, checked) {
     // send to server to handle file permission change
-    let url = buildNewCourseUrl(['course_materials', 'modify_permission']) + '?filenames=' + encodeURIComponent(filename) + '&checked=' + checked;
+    let url = buildCourseUrl(['course_materials', 'modify_permission']) + '?filenames=' + encodeURIComponent(filename) + '&checked=' + checked;
 
     $.ajax({
         type: "POST",
@@ -384,28 +343,9 @@ function changePermission(filename, checked) {
         error: function(e) {
             alert("Encounter saving the checkbox state.");
         }
-    })
+    });
 }
 
-function changeFolderPermission(filenames, checked,handleData) {
-    // send to server to handle file permission change
-    let url = buildNewCourseUrl(['course_materials', 'modify_permission']) + '?filenames=' + encodeURIComponent(filenames[0]) + '&checked=' + checked;
-
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: {'fn':filenames,csrf_token: csrfToken},
-        success: function(data) {
-            if(handleData){
-                handleData(data);
-            }
-        },
-        error: function(e) {
-            alert("Encounter saving the checkbox state.");
-        }
-    })
-}
-
-function showDateInput(id) {
-    $("#date_to_release_" + id).show();
+function toggleDateInput(id) {
+    $("#date_to_release_" + id).toggle();
 }

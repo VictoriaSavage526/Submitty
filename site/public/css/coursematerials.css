@@ -17,18 +17,22 @@
     display: none;
 }
 
-.file-row, .div-row {
+.file-row, .dir-row {
     display: flex;
     flex-flow: column-reverse;
     margin: 0 -30px;
     padding: 0 30px;
 }
 
-.file-row:not(:last-child), .div-row:not(:last-child) {
+.file-row, .dir-row {
     border-bottom: 1px solid lightgray;
 }
 
-.file-viewer, .div-viewer {
+.sub-dir:last-child.file-row:last-child, .sub-dir:last-child.file-row:last-child {
+    border: none !important;
+}
+
+.file-viewer, .dir-viewer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -57,7 +61,7 @@
     padding-left: 10px;
 }
 
-.date-picker, .div-date {
+.date-picker, .dir-date {
     width: 100% !important;
 }
 
@@ -66,13 +70,13 @@
 }
 
 @media (min-width: 768px) {
-    .file-row, .div-row {
+    .file-row, .dir-row {
         align-items: stretch;
         flex-direction: row;
         border: none !important;
     }
 
-    .date-cell, .file-viewer, .div-viewer {
+    .date-cell, .file-viewer, .dir-viewer {
         padding: 0;
     }
 
