@@ -17,8 +17,6 @@ apt-get install -qqy software-properties-common
 add-apt-repository "deb http://ftp.debian.org/debian/ buster main contrib non-free"
 add-apt-repository "deb http://ftp.debian.org/debian buster-backports main"
 
-apt-get update
-
 #################################################################
 # PACKAGE SETUP
 #################
@@ -90,7 +88,7 @@ apt-get install -qqy cmake
 apt-get install -qqy python-clang-6.0
 
 # Install OpenJDK8 Non-Interactively
-echo "installing java8"
+echo "installing java11"
 apt-get install -qqy openjdk-11-jdk
 update-java-alternatives --set java-1.11.0-openjdk-amd64
 
