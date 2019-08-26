@@ -116,8 +116,9 @@ class TestSubmission(BaseTestCase):
         self.accept_alerts(1)
 
         # wait until the page reloads to change the active version, completing the test
-        version_xpath = "//div[@class='content']/select/option[@value='{}' and @selected and substring(text(), string-length(text())-17)='GRADE THIS VERSION']".format(new_version)
-        ActionChains(self.driver).move_to_element(self.driver.find_element_by_xpath(version_xpath)).perform()
+        version_select_elem = self.driver.find_element_by_id('submission_version')
+        version_xpath = "//option[@value='{}' and @selected and substring(text(), string-length(text())-17)='GRADE THIS VERSION']".format(new_version)
+        ActionChains(self.driver).move_to_element(version_select_elem.find_element_by_xpath(version_xpath)).perform()
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, version_xpath)))
 
     # for test cases that require switching versions, make submissions to ensure they will
