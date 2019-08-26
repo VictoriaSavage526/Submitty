@@ -100,7 +100,7 @@ class TestSubmission(BaseTestCase):
 
     def change_submission_version(self):
         # find the version selection dropdown and click
-        version_select_elem = self.driver.find_element_by_xpath("//div[@class='content']/select")
+        version_select_elem = self.driver.find_element_by_id('submission_version')
         version_select_elem.click()
 
         # find an unselected version and click
@@ -117,13 +117,7 @@ class TestSubmission(BaseTestCase):
 
         # wait until the page reloads to change the active version, completing the test
         version_xpath = "//div[@class='content']/select/option[@value='{}' and @selected and substring(text(), string-length(text())-17)='GRADE THIS VERSION']".format(new_version)
-        print(self.driver.page_source)
-        try:
-            ActionChains(self.driver).move_to_element(self.driver.find_element_by_xpath(version_xpath)).perform()
-        except:
-            for entry in self.driver.get_log('browser'):
-                print(entry)
-            raise
+        ActionChains(self.driver).move_to_element(self.driver.find_element_by_xpath(version_xpath)).perform()
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, version_xpath)))
 
     # for test cases that require switching versions, make submissions to ensure they will
@@ -181,7 +175,14 @@ class TestSubmission(BaseTestCase):
         self.ensure_multiple_versions()
 
         # test changing the submission version
-        self.change_submission_version()
+        try:
+            self.change_submission_version()
+        except:
+            print(self.driver.page_source)
+            print("--CONSOLE LOG--")
+            for entry in driver.get_log('browser'):
+                print(entry)
+            raise
 
     # test cancelling the submission version
     def test_cancel_submission_version(self):
