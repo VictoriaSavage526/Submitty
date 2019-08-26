@@ -120,7 +120,8 @@ jobs:
         - sudo apache2ctl -t
         - sudo service apache2 restart
       script:
-        - TEST_URL="http://localhost" python -m unittest -v --start-directory tests e2e.test_submission.TestSubmission
+        - cd tests
+        - TEST_URL="http://localhost" python -m unittest -v e2e.test_submission.TestSubmission
 
 notifications:
   email: false
