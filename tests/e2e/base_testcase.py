@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 # noinspection PyPep8Naming
@@ -66,7 +67,9 @@ class BaseTestCase(unittest.TestCase):
         self.use_log_in = log_in
 
     def setUp(self):
-        self.driver = webdriver.Chrome(options=self.options)
+        d = DesiredCapabilities.CHROME
+        d['loggingPrefs'] = {'browser': 'ALL'}
+        self.driver = webdriver.Chrome(options=self.options, desired_capabilities=d)
         self.driver.set_window_size(1600, 900)
         self.enable_download_in_headless_chrome(self.download_dir)
         if self.use_log_in:

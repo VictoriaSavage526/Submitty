@@ -857,7 +857,7 @@ function adminTeamForm(new_team, who_id, reg_section, rot_section, user_assignme
             }
         }
     }
-    
+
     $(":text",form).change(function() {
         var found = false;
         for (var i = 0; i < student_full.length; i++) {
@@ -993,6 +993,7 @@ function gradeableChange(url, sel){
     window.location.href = url;
 }
 function versionChange(url, sel){
+    console.log(url, sel);
     url = url + sel.value;
     window.location.href = url;
 }
