@@ -195,7 +195,7 @@ class TestSubmission(BaseTestCase):
         except:
             print(self.driver.page_source)
             print("--CONSOLE LOG--")
-            for entry in driver.get_log('browser'):
+            for entry in self.driver.get_log('browser'):
                 print(entry)
             raise
 
