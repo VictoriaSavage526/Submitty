@@ -176,14 +176,7 @@ class TestSubmission(BaseTestCase):
         self.ensure_multiple_versions()
 
         # test changing the submission version
-        try:
-            self.change_submission_version()
-        except:
-            print(self.driver.page_source)
-            print("--CONSOLE LOG--")
-            for entry in driver.get_log('browser'):
-                print(entry)
-            raise
+        self.change_submission_version()
 
     # test cancelling the submission version
     def test_cancel_submission_version(self):
@@ -197,7 +190,14 @@ class TestSubmission(BaseTestCase):
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@class='content']/select/option[@value='0' and @selected]")))
 
         # change back to a valid submission version
-        self.change_submission_version()
+        try:
+            self.change_submission_version()
+        except:
+            print(self.driver.page_source)
+            print("--CONSOLE LOG--")
+            for entry in driver.get_log('browser'):
+                print(entry)
+            raise
 
 
 if __name__ == "__main__":
