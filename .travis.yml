@@ -160,6 +160,7 @@ jobs:
         - xvfb
         - docker
       addons:
+        firefox: latest-esr
         chrome: stable
         postgresql: "9.5"
         apt:
@@ -216,12 +217,19 @@ jobs:
         - pip3 install paramiko
         - pip3 install psutil
         - pip3 install docker
+        - pushd /tmp
         - CHROME_VERSION=$(google-chrome --version | egrep -o -e '[0-9]+\.[0-9]+\.[0-9]+')
         - CHROME_DRIVER_VERSION=$(curl -L https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})
         - wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
         - unzip chromedriver_linux64.zip
-        - sudo chmod u+x chromedriver
+        - chmod +x chromedriver
         - sudo mv chromedriver /usr/bin/
+        - GECKO_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | jq -r '.tag_name')
+        - wget https://github.com/mozilla/geckodriver/releases/download/${GECKO_VERSION}/geckodriver-${GECKO_VERSION}-linux64.tar.gz
+        - tar -xvf geckodriver-${GECKO_VERSION}-linux64.tar.gz
+        - chmod +x geckodriver
+        - sudo mv geckodriver /usr/bin/
+        - popd
         - pushd ${TRAVIS_BUILD_DIR}/python_submitty_utils
         - pip3 install .
         - popd
@@ -261,6 +269,7 @@ jobs:
         - sudo service apache2 restart
       script:
         - TEST_URL="http://localhost" python -m unittest discover -v --start-directory tests
+        - TEST_URL="http://localhost" BROWSER=firefox python -m unittest discover -v --start-directory tests
         - SEMESTER=$(python3 -c 'from datetime import datetime; today = datetime.today(); semester = ("s" if today.month < 7 else "f") + str(today.year)[-2:]; print(semester)')
         - sudo python3 /usr/local/submitty/bin/generate_repos.py ${SEMESTER} sample open_homework
         - pushd /tmp

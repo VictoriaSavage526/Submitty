@@ -33,28 +33,31 @@ class BaseTestCase(unittest.TestCase):
 
     def __init__(self, testname, user_id=None, user_password=None, user_name=None, log_in=True):
         super().__init__(testname)
-        if "TEST_URL" in os.environ and os.environ['TEST_URL'] is not None:
-            self.test_url = os.environ['TEST_URL']
-        else:
-            self.test_url = BaseTestCase.TEST_URL
-        self.driver = None
-        """ :type driver: webdriver.Chrome """
-        self.options = webdriver.ChromeOptions()
-        self.options.add_argument('--headless')
-        self.options.add_argument("--disable-extensions")
-        self.options.add_argument('--hide-scrollbars')
-        self.options.add_argument('--disable-gpu')
-        self.options.add_argument('--no-proxy-server')
+        self.test_url = os.environ.get('TEST_URL', BaseTestCase.TEST_URL)
+        self.browser = os.environ.get('BROWSER', 'chrome')
 
-        self.download_dir = tempfile.mkdtemp(prefix="vagrant-submitty")
-        # https://stackoverflow.com/a/26916386/214063
-        profile = {
-            'download.prompt_for_download': False,
-            'download.default_directory': self.download_dir,
-            'download.directory_upgrade': True,
-            'plugins.plugins_disabled': ['Chrome PDF Viewer']
-        }
-        self.options.add_experimental_option('prefs', profile)
+        self.driver = None
+
+        if self.browser == 'chrome':
+            self.options = webdriver.ChromeOptions()
+            self.options.add_argument('--headless')
+            self.options.add_argument("--disable-extensions")
+            self.options.add_argument('--hide-scrollbars')
+            self.options.add_argument('--disable-gpu')
+            self.options.add_argument('--no-proxy-server')
+            self.download_dir = tempfile.mkdtemp(prefix="vagrant-submitty")
+            # https://stackoverflow.com/a/26916386/214063
+            profile = {
+                'download.prompt_for_download': False,
+                'download.default_directory': self.download_dir,
+                'download.directory_upgrade': True,
+                'plugins.plugins_disabled': ['Chrome PDF Viewer']
+            }
+            self.options.add_experimental_option('prefs', profile)
+        elif self.browser == 'firefox':
+            self.options = webdriver.FirefoxOptions()
+            self.options.add_argument('-headless')
+
         self.user_id = user_id if user_id is not None else BaseTestCase.USER_ID
         self.user_name = user_name if user_name is not None else BaseTestCase.USER_NAME
         if user_password is None and user_id is not None:
@@ -66,9 +69,16 @@ class BaseTestCase(unittest.TestCase):
         self.use_log_in = log_in
 
     def setUp(self):
-        self.driver = webdriver.Chrome(options=self.options)
+        if self.browser == 'chrome':
+            self.driver = webdriver.Chrome(options=self.options)
+        elif self.browser == 'firefox':
+            self.driver = webdriver.Firefox(options=self.options)
+
         self.driver.set_window_size(1600, 900)
-        self.enable_download_in_headless_chrome(self.download_dir)
+
+        if self.browser == 'chrome':
+            self.enable_download_in_headless_chrome(self.download_dir)
+
         if self.use_log_in:
             self.log_in()
 
