@@ -57,6 +57,7 @@ class BaseTestCase(unittest.TestCase):
         elif self.browser == 'firefox':
             self.options = webdriver.FirefoxOptions()
             self.options.add_argument('-headless')
+            self.download_dir = None
 
         self.user_id = user_id if user_id is not None else BaseTestCase.USER_ID
         self.user_name = user_name if user_name is not None else BaseTestCase.USER_NAME
@@ -84,7 +85,8 @@ class BaseTestCase(unittest.TestCase):
 
     def tearDown(self):
         self.driver.quit()
-        shutil.rmtree(self.download_dir)
+        if self.browser == 'chrome':
+            shutil.rmtree(self.download_dir)
 
     def get(self, url=None, parts=None):
         if url is None:
