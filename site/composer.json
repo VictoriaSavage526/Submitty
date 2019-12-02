@@ -18,7 +18,7 @@
     "lcobucci/jwt": "3.3.1",
     "symfony/routing": "4.3.4",
     "symfony/config": "4.3.4",
-    "symfony/http-foundation": "4.3.4",
+    "symfony/http-foundation": "4.3.8",
     "doctrine/annotations": "1.7.0",
     "doctrine/cache": "1.8.0",
     "php-ds/php-ds": "1.2.0"
